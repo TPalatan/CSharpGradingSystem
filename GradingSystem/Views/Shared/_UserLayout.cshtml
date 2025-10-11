@@ -1,0 +1,150 @@
+﻿﻿@{
+Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GradingSystem</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GradingSystem.styles.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+
+
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div class="sidebar">
+
+        <div class="sidebar-search">
+            <div class="search-container">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" placeholder="Search..." />
+            </div>
+        </div>
+
+        <div class="sidebar-logo">
+            <img src="~/images/Tmc.png" alt="Logo" class="logo-img" />
+            <h4>Trinidad Municipal Collage</h4>
+        </div>
+
+
+        <a asp-controller="User" asp-action="Dashboard">
+            <i data-lucide="home"></i>
+            <span>Dashboard</span>
+        </a>
+        <a asp-controller="User" asp-action="Grades">
+            <i data-lucide="book-open"></i>
+            <span>Grades</span>
+        </a>
+        <a asp-controller="User" asp-action="StudentProfile">
+            <i data-lucide="users"></i>
+            <span>Students Profile</span>
+        </a>
+        <a asp-controller="User" asp-action="Subjects">
+            <i data-lucide="layers"></i>
+            <span>Subjects</span>
+        </a>
+        <a asp-controller="User" asp-action="Index">
+            <i data-lucide="file-text"></i>
+            <span>Reports</span>
+        </a>
+        <a asp-controller="Account" asp-action="Logout">
+            <i data-lucide="log-out"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+
+
+    <div class="top-navbar">
+        <span class="navbar-brand">Grading System</span>
+        <div>
+            <span>Hello, Admin</span>
+        </div>
+    </div>
+
+
+    <div class="main-content">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+
+        <footer class="footer-content">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <h5>Trinidad Municipal College</h5>
+                    <p>Empowering students through education and innovation.</p>
+                </div>
+
+                <div class="footer-center">
+                    <h6>Quick Links</h6>
+                    <ul>
+                        <li><a asp-controller="User" asp-action="Index">DashBoard</a></li>
+                        <li><a asp-controller="User" asp-action="Index">Grades</a></li>
+                        <li><a asp-controller="User" asp-action="Index">Students</a></li>
+                        <li><a asp-controller="User" asp-action="Index">Teachers</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-right">
+                    <h6>Connect With Us</h6>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank"><i data-lucide="facebook"></i></a>
+                        <a href="https://youtube.com" target="_blank"><i data-lucide="youtube"></i></a>
+                        <a href="https://twitter.com" target="_blank"><i data-lucide="twitter"></i></a>
+                        <a href="mailto:info@tmc.edu.ph"><i data-lucide="mail"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Trinidad Municipal College - All Rights Reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const banner = document.getElementById("studentBanner");
+        if (!banner) return; // stop if banner not on page
+
+        const images = banner.querySelectorAll(".banner-img");
+        let current = 0;
+
+        function showNextImage() {
+            images[current].classList.remove("active");
+            current = (current + 1) % images.length;
+            images[current].classList.add("active");
+        }
+
+        // Reset state
+        images.forEach((img, i) => img.classList.toggle("active", i === 0));
+
+        setInterval(showNextImage, 3000);
+    });
+</script>
+
+
+
+
+</html>

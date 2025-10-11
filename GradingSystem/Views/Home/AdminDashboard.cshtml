@@ -1,0 +1,89 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="admin-dashboard">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-text">
+            <h2>Welcome back, <span class="admin-name">Admin</span> 👋</h2>
+            <p>Manage the system efficiently and stay up to date.</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+        <div class="stat-card students-card">
+            <div class="stat-icon"><i data-lucide="users"></i></div>
+            <div class="stat-info">
+                <h5>Total Students</h5>
+                <h2>125</h2>
+            </div>
+        </div>
+
+        <div class="stat-card teachers-card">
+            <div class="stat-icon"><i data-lucide="user-check"></i></div>
+            <div class="stat-info">
+                <h5>Total Teachers</h5>
+                <h2>25</h2>
+            </div>
+        </div>
+
+        <div class="stat-card subjects-card">
+            <div class="stat-icon"><i data-lucide="book-open"></i></div>
+            <div class="stat-info">
+                <h5>Total Subjects</h5>
+                <h2>40</h2>
+            </div>
+        </div>
+
+        <div class="stat-card reports-card">
+            <div class="stat-icon"><i data-lucide="file-text"></i></div>
+            <div class="stat-info">
+                <h5>Reports</h5>
+                <h2>12</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div class="announcements mt-4">
+        <div class="announcements-header">
+            <h4><i data-lucide="bell"></i> Announcements</h4>
+        </div>
+
+        <div class="announcement-list">
+            <div class="announcement-card">
+                <div class="announcement-icon"><i data-lucide="info"></i></div>
+                <div class="announcement-content">
+                    <h5>New Semester Schedule Released</h5>
+                    <p>The new semester schedule is now available for students and teachers.</p>
+                </div>
+            </div>
+
+            <div class="announcement-card">
+                <div class="announcement-icon"><i data-lucide="check-circle"></i></div>
+                <div class="announcement-content">
+                    <h5>System Maintenance Completed</h5>
+                    <p>The grading system will now be fully functional with new updates.</p>
+                </div>
+            </div>
+
+            <div class="announcement-card">
+                <div class="announcement-icon"><i data-lucide="alert-circle"></i></div>
+                <div class="announcement-content">
+                    <h5>Grades Submission Deadline</h5>
+                    <p>All teachers must submit grades before the end of the week.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        lucide.createIcons();
+    </script>
+}

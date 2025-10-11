@@ -1,0 +1,112 @@
+﻿/* === Grades Page === */
+.grades-page {
+    padding: 20px;
+    color: #333;
+}
+
+.grades-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+
+    .grades-header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #0b132b;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .grades-header p {
+        color: #666;
+        font-size: 15px;
+        margin-top: 5px;
+    }
+
+/* Summary Cards */
+.grades-summary {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.summary-card {
+    flex: 1;
+    min-width: 180px;
+    background: linear-gradient(135deg, #0b132b, #1c2541);
+    color: #fff;
+    border-radius: 14px;
+    text-align: center;
+    padding: 18px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+}
+
+    .summary-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .summary-card h5 {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .summary-card h2 {
+        margin: 5px 0 0 0;
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+/* Grades Table */
+.grades-table-card {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.grades-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .grades-table th {
+        background: #0b132b;
+        color: #fff;
+        padding: 12px;
+        font-weight: 600;
+    }
+
+    .grades-table td {
+        padding: 12px;
+        vertical-align: middle;
+        border-bottom: 1px solid #eee;
+    }
+
+    .grades-table tr:hover {
+        background: #f1f4ff;
+    }
+
+/* Grade Status */
+.status {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+    .status.passed {
+        background-color: #00b09b;
+    }
+
+    .status.failed {
+        background-color: #d62828;
+    }
+
+    .status.inprogress {
+        background-color: #f77f00;
+    }

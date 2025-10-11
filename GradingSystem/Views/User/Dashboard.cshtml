@@ -1,0 +1,101 @@
+﻿@{
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["Title"] = "User Dashboard";
+}
+
+<div class="student-dashboard">
+    <div class="welcome-banner">
+        <div class="welcome-text">
+            <h2>Welcome back, <span class="student-name">Juan Dela Cruz</span> 👋</h2>
+            <p>Stay motivated and keep up the great work this semester!</p>
+        </div>
+
+        <div class="banner-card slider" id="studentBanner">
+            <img src="~/images/banner1a.jpg" alt="Banner 1" class="banner-img active" />
+            <img src="~/images/banner1b.jpg" alt="Banner 2" class="banner-img" />
+            <img src="~/images/banner1c.jpg" alt="Banner 3" class="banner-img" />
+            <img src="~/images/banner1d.jpg" alt="Banner 4" class="banner-img" />
+        </div>
+    </div>
+
+    <!-- Top Cards -->
+    <div class="stats-cards">
+        <div class="stat-card id-card">
+            <div class="stat-icon"><i data-lucide="id-card"></i></div>
+            <div class="stat-info">
+                <h5>ID Number</h5>
+                <h2>23-016696</h2>
+            </div>
+        </div>
+
+        <div class="stat-card course-card">
+            <div class="stat-icon"><i data-lucide="book-open"></i></div>
+            <div class="stat-info">
+                <h5>Course</h5>
+                <h2>BSIT</h2>
+            </div>
+        </div>
+
+        <div class="stat-card year-card">
+            <div class="stat-icon"><i data-lucide="calendar"></i></div>
+            <div class="stat-info">
+                <h5>Year Level</h5>
+                <h2>3rd Year</h2>
+            </div>
+        </div>
+
+        <div class="stat-card status-card">
+            <div class="stat-icon"><i data-lucide="check-circle"></i></div>
+            <div class="stat-info">
+                <h5>Status</h5>
+                <h2>Enrolled</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcements Section -->
+    <div class="announcements mt-4">
+        <div class="announcements-header">
+            <h4><i data-lucide="megaphone"></i> Announcements</h4>
+        </div>
+
+        <div class="announcement-list">
+            <div class="announcement-card">
+                <div class="announcement-icon">
+                    <i data-lucide="calendar-days"></i>
+                </div>
+                <div class="announcement-content">
+                    <h5>Midterm Exams Schedule</h5>
+                    <p>Midterms will start on <strong>October 20, 2025</strong>. Check your subjects for your exam dates.</p>
+                </div>
+            </div>
+
+            <div class="announcement-card">
+                <div class="announcement-icon">
+                    <i data-lucide="graduation-cap"></i>
+                </div>
+                <div class="announcement-content">
+                    <h5>Dean’s List Announcement</h5>
+                    <p>Congratulations to all students who made it to the <strong>Dean’s List</strong> this semester!</p>
+                </div>
+            </div>
+
+            <div class="announcement-card">
+                <div class="announcement-icon">
+                    <i data-lucide="book-open"></i>
+                </div>
+                <div class="announcement-content">
+                    <h5>Library Week</h5>
+                    <p>Join the <strong>Library Week Celebration</strong> on <strong>October 25–29</strong>. Win exciting prizes!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+
+
+</div>

@@ -1,0 +1,84 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin-layout.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="sidebar-logo">
+            <img src="~/images/Tmc.png" alt="Logo" class="logo-img" />
+            <h4>TMC Admin</h4>
+        </div>
+
+        <a asp-controller="Admin" asp-action="Dashboard" class="nav-item">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a asp-controller="Admin" asp-action="ManageUsers" class="nav-item">
+            <i data-lucide="users"></i>
+            <span>Manage Users</span>
+        </a>
+
+        <a asp-controller="Admin" asp-action="Subjects" class="nav-item">
+            <i data-lucide="book"></i>
+            <span>Subjects</span>
+        </a>
+
+        <a asp-controller="Admin" asp-action="Reports" class="nav-item">
+            <i data-lucide="file-text"></i>
+            <span>Reports</span>
+        </a>
+
+        <a asp-controller="Account" asp-action="Logout" class="nav-item logout">
+            <i data-lucide="log-out"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+
+    <!-- Top Navbar -->
+    <div class="admin-topbar">
+        <div class="left">
+            <h5>@ViewData["Title"]</h5>
+        </div>
+        <div class="right">
+            <span>Hello, Admin</span>
+            <img src="~/images/admin-avatar.png" alt="Admin" class="avatar" />
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+
+        <footer class="admin-footer">
+            <p>&copy; 2025 Trinidad Municipal College — Admin Portal</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

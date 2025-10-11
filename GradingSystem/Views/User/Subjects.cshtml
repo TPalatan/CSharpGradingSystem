@@ -1,0 +1,62 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["Title"] = "Subjects";
+    
+}
+
+<div class="subject-page">
+    <!-- Header -->
+    <div class="subject-header">
+        <h2><i data-lucide="book-open"></i> Subjects</h2>
+        <p>Manage and view all your enrolled and completed subjects.</p>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="subject-filters">
+        <input type="text" placeholder="Search subject..." class="search-input" />
+        <select class="filter-select">
+            <option value="all">All</option>
+            <option value="enrolled">Enrolled</option>
+            <option value="completed">Completed</option>
+            <option value="pending">Pending</option>
+        </select>
+    </div>
+
+    <!-- Subject List -->
+    <div class="subject-list">
+        <div class="subject-card">
+            <div class="subject-info">
+                <h3>Introduction to Computing</h3>
+                <p><strong>Code:</strong> IT101</p>
+                <p><strong>Instructor:</strong> Mr. Juan Dela Cruz</p>
+                <p><strong>Units:</strong> 3</p>
+            </div>
+            <div class="subject-status enrolled">Enrolled</div>
+        </div>
+
+        <div class="subject-card">
+            <div class="subject-info">
+                <h3>Database Management System</h3>
+                <p><strong>Code:</strong> IT203</p>
+                <p><strong>Instructor:</strong> Ms. Maria Santos</p>
+                <p><strong>Units:</strong> 3</p>
+            </div>
+            <div class="subject-status completed">Completed</div>
+        </div>
+
+        <div class="subject-card">
+            <div class="subject-info">
+                <h3>Web Systems and Technologies</h3>
+                <p><strong>Code:</strong> IT304</p>
+                <p><strong>Instructor:</strong> Mr. Roberto Cruz</p>
+                <p><strong>Units:</strong> 3</p>
+            </div>
+            <div class="subject-status pending">Pending</div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/subjects.css" asp-append-version="true" />
+}

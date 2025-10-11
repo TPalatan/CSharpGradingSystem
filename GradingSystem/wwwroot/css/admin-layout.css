@@ -1,0 +1,123 @@
+﻿/* admin-layout.css – dark modern admin dashboard */
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5f6fa;
+}
+
+/* Sidebar */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 230px;
+    background-color: #1e1e2f;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1rem;
+}
+
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+    .sidebar-logo img {
+        width: 60px;
+        border-radius: 50%;
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-logo h4 {
+        color: #90caf9;
+        font-weight: 600;
+    }
+
+.admin-sidebar .nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    color: #ccc;
+    text-decoration: none;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+    .admin-sidebar .nav-item i {
+        margin-right: 10px;
+        width: 20px;
+    }
+
+    .admin-sidebar .nav-item:hover,
+    .admin-sidebar .nav-item.active {
+        background-color: #29293d;
+        color: #fff;
+    }
+
+.admin-sidebar .logout {
+    margin-top: auto;
+    border-top: 1px solid #333;
+}
+
+/* Top Navbar */
+.admin-topbar {
+    position: fixed;
+    top: 0;
+    left: 230px;
+    right: 0;
+    height: 60px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+    .admin-topbar .right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+    }
+
+    .admin-topbar .avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+/* Main Content */
+.admin-main {
+    margin-left: 230px;
+    padding: 80px 20px 60px;
+}
+
+/* Footer */
+.admin-footer {
+    text-align: center;
+    padding: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+    border-top: 1px solid #ddd;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        width: 200px;
+    }
+
+    .admin-topbar {
+        left: 200px;
+    }
+
+    .admin-main {
+        margin-left: 200px;
+    }
+}

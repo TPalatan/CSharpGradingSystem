@@ -1,0 +1,88 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["Title"] = "My Grades";
+}
+<link rel="stylesheet" href="~/css/grades.css" />
+
+
+<div class="grades-page">
+    <div class="grades-header">
+        <h2><i data-lucide="book-open"></i> My Grades</h2>
+        <p>Here’s your performance for this semester.</p>
+    </div>
+
+    <div class="grades-summary">
+        <div class="summary-card">
+            <h5>GPA</h5>
+            <h2>1.75</h2>
+        </div>
+        <div class="summary-card">
+            <h5>Total Subjects</h5>
+            <h2>6</h2>
+        </div>
+        <div class="summary-card">
+            <h5>Status</h5>
+            <h2>Enrolled</h2>
+        </div>
+    </div>
+
+    <div class="card grades-table-card mt-4">
+        <div class="card-header">
+            <h5><i data-lucide="list"></i> Subject Grades</h5>
+        </div>
+        <div class="card-body">
+            <table class="table grades-table">
+                <thead>
+                    <tr>
+                        <th>Subject Code</th>
+                        <th>Subject Name</th>
+                        <th>Instructor</th>
+                        <th>Midterm</th>
+                        <th>Final</th>
+                        <th>Average</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IT101</td>
+                        <td>Introduction to Computing</td>
+                        <td>Prof. Santos</td>
+                        <td>1.75</td>
+                        <td>1.50</td>
+                        <td>1.63</td>
+                        <td><span class="status passed">Passed</span></td>
+                    </tr>
+                    <tr>
+                        <td>IT102</td>
+                        <td>Computer Programming 1</td>
+                        <td>Prof. Reyes</td>
+                        <td>2.00</td>
+                        <td>1.75</td>
+                        <td>1.88</td>
+                        <td><span class="status passed">Passed</span></td>
+                    </tr>
+                    <tr>
+                        <td>IT103</td>
+                        <td>Mathematics in Computing</td>
+                        <td>Prof. Cruz</td>
+                        <td>2.50</td>
+                        <td>2.75</td>
+                        <td>2.63</td>
+                        <td><span class="status failed">Failed</span></td>
+                    </tr>
+                    <tr>
+                        <td>IT104</td>
+                        <td>Data Structures</td>
+                        <td>Prof. Dela Cruz</td>
+                        <td>1.50</td>
+                        <td>1.25</td>
+                        <td>1.38</td>
+                        <td><span class="status passed">Passed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

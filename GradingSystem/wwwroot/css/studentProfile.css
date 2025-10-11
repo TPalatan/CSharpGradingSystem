@@ -1,0 +1,157 @@
+﻿.student-profile-page {
+    padding: 30px;
+    color: #333;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* === Profile Header with Blur === */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 30px;
+    padding: 20px 30px;
+    border-radius: 16px;
+    color: #222;
+    background: rgba(180, 180, 180, 0.35); /* subtle gray blur */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* === Profile Picture Container === */
+.profile-pic-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* === Profile Picture (Square & Stable) === */
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px; /* Square with slight rounding */
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: #f0f0f0;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+    .profile-pic:hover {
+        transform: scale(1.05);
+    }
+
+/* === Change Photo Label (Below Picture) === */
+.change-photo-label {
+    font-size: 13px;
+    color: #222;
+    background: rgba(200, 200, 200, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 8px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+    .change-photo-label:hover {
+        background: rgba(180, 180, 180, 0.6);
+        transform: scale(1.05);
+    }
+
+/* === Profile Info Text === */
+.profile-info h2 {
+    font-size: 24px;
+    margin-bottom: 5px;
+    color: #0b132b;
+    font-weight: 700;
+}
+
+.profile-info p {
+    margin: 2px 0;
+    opacity: 0.9;
+}
+
+/* === Form Section === */
+.profile-form-section {
+    margin-top: 40px;
+}
+
+    .profile-form-section h4 {
+        margin-bottom: 15px;
+        color: #0b132b;
+        font-weight: 700;
+    }
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+/* === Input Fields === */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .form-group label {
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            outline: none;
+        }
+
+/* === Button === */
+.form-actions {
+    text-align: right;
+}
+
+    .form-actions button {
+        background: linear-gradient(135deg, #0077b6, #00b4d8);
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+        .form-actions button:hover {
+            background: linear-gradient(135deg, #005f99, #0090b8);
+            transform: translateY(-2px);
+        }
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .form-actions {
+        text-align: center;
+    }
+}
