@@ -9,6 +9,28 @@ namespace AuthDemo.Controllers
         public IActionResult Dashboard()
         {
             return View();
+
+        }
+            public IActionResult Student()
+        {
+            return View();
+        }
+
+        public IActionResult Teachers()
+        {
+            return View();
+
+        }
+
+
+        public IActionResult Subjects()
+        {
+            return View();
+
+        }
+                  public IActionResult AssignSubjects()
+        {
+            return View();
         }
     }
 

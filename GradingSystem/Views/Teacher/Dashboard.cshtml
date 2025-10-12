@@ -1,0 +1,54 @@
+﻿@{
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4">Welcome, Teacher!</h2>
+
+    <!-- Dashboard Stats -->
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3 border-0">
+                <i data-lucide="users" class="mb-2" style="width:30px; height:30px;"></i>
+                <h5 class="card-title">My Students</h5>
+                <p class="display-6 fw-bold text-primary">120</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3 border-0">
+                <i data-lucide="book-open" class="mb-2" style="width:30px; height:30px;"></i>
+                <h5 class="card-title">Subjects</h5>
+                <p class="display-6 fw-bold text-success">5</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3 border-0">
+                <i data-lucide="clipboard-list" class="mb-2" style="width:30px; height:30px;"></i>
+                <h5 class="card-title">Pending Grades</h5>
+                <p class="display-6 fw-bold text-warning">8</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center p-3 border-0">
+                <i data-lucide="check-circle" class="mb-2" style="width:30px; height:30px;"></i>
+                <h5 class="card-title">Approved</h5>
+                <p class="display-6 fw-bold text-info">15</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card mt-5 shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Recent Activities</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item">You submitted grades for <b>BSIT 3A - Database Systems</b>.</li>
+                <li class="list-group-item">New student added in <b>BSBA 2B</b>.</li>
+                <li class="list-group-item">Report generated for <b>1st Semester, 2025</b>.</li>
+            </ul>
+        </div>
+    </div>
+</div>

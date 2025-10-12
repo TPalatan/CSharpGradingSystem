@@ -1,0 +1,94 @@
+﻿@{
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+    ViewData["Title"] = "My Subjects";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">My Subjects</h2>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control" placeholder="Search subject..." style="width: 250px;">
+            <button class="btn btn-primary">
+                <i data-lucide="search"></i> Search
+            </button>
+        </div>
+    </div>
+
+    <!-- Subject Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Subject List</h5>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Subject Code</th>
+                            <th>Subject Title</th>
+                            <th>Course</th>
+                            <th>Year Level</th>
+                            <th>Section</th>
+                            <th>Schedule</th>
+                            <th>Students</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>CS101</td>
+                            <td>Introduction to Programming</td>
+                            <td>BSIT</td>
+                            <td>1st Year</td>
+                            <td>A</td>
+                            <td>Mon & Wed, 8:00–9:30 AM</td>
+                            <td>35</td>
+                            <td class="text-center">
+                                <a asp-controller="Teacher" asp-action="Students" asp-route-id="CS101" class="btn btn-sm btn-outline-primary">
+                                    <i data-lucide="users"></i> View Students
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>CS202</td>
+                            <td>Database Systems</td>
+                            <td>BSIT</td>
+                            <td>2nd Year</td>
+                            <td>B</td>
+                            <td>Tue & Thu, 10:00–11:30 AM</td>
+                            <td>32</td>
+                            <td class="text-center">
+                                <a asp-controller="Teacher" asp-action="Students" asp-route-id="CS202" class="btn btn-sm btn-outline-primary">
+                                    <i data-lucide="users"></i> View Students
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>CS305</td>
+                            <td>Web Development</td>
+                            <td>BSIT</td>
+                            <td>3rd Year</td>
+                            <td>A</td>
+                            <td>Mon & Wed, 1:00–2:30 PM</td>
+                            <td>29</td>
+                            <td class="text-center">
+                                <a asp-controller="Teacher" asp-action="Students" asp-route-id="CS305" class="btn btn-sm btn-outline-primary">
+                                    <i data-lucide="users"></i> View Students
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script> lucide.createIcons(); </script>
+}

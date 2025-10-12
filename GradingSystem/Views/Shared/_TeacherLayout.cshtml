@@ -6,55 +6,41 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Registrar Panel</title>
+    <title>@ViewData["Title"] - Teacher Panel</title>
 
-    <!-- Bootstrap & CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
 
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
     @RenderSection("Styles", required: false)
 </head>
 <body>
-
     <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="sidebar-logo text-center">
             <img src="~/images/Tmc.png" alt="Logo" class="logo-img" />
-            <h4>Admin Panel</h4>
+            <h4>Teacher Panel</h4>
         </div>
 
         <div class="sidebar-links">
-            <a asp-controller="Admin" asp-action="Dashboard" class="active">
-                <i data-lucide="home"></i>
-                <span>Dashboard</span>
+            <a asp-controller="Teacher" asp-action="Dashboard" class="active">
+                <i data-lucide="home"></i><span>Dashboard</span>
             </a>
-            <a asp-controller="Admin" asp-action="Student">
-                <i data-lucide="users"></i>
-                <span>Student Records</span>
+            <a asp-controller="Teacher" asp-action="Students">
+                <i data-lucide="users"></i><span>My Students</span>
             </a>
-            <a asp-controller="Admin" asp-action="Subjects">
-                <i data-lucide="book-open"></i>
-                <span>Subjects</span>
+            <a asp-controller="Teacher" asp-action="Subjects">
+                <i data-lucide="book-open"></i><span>Subjects</span>
             </a>
-            <a asp-controller="Registrar" asp-action="Grades">
-                <i data-lucide="clipboard-list"></i>
-                <span>Grades</span>
+            <a asp-controller="Teacher" asp-action="Grades">
+                <i data-lucide="clipboard-list"></i><span>Grades</span>
             </a>
-            <a asp-controller="Admin" asp-action="AssignSubjects">
-                <i data-lucide="file-text"></i>
-                <span>Student Subjects</span>
-            </a>
-            <a asp-controller="Admin" asp-action="Teachers">
-                <i data-lucide="user-check"></i>
-                <span>Teachers</span>
+            <a asp-controller="Teacher" asp-action="Reports">
+                <i data-lucide="file-text"></i><span>Reports</span>
             </a>
             <a asp-controller="Account" asp-action="Logout" class="logout">
-                <i data-lucide="log-out"></i>
-                <span>Logout</span>
+                <i data-lucide="log-out"></i><span>Logout</span>
             </a>
         </div>
     </div>
@@ -62,10 +48,10 @@
     <!-- TOP NAVBAR -->
     <div class="top-navbar">
         <div class="d-flex justify-content-between align-items-center w-100 px-4">
-            <span class="navbar-brand mb-0 h5 text-light">Trinidad Municipal College - Admin</span>
+            <span class="navbar-brand mb-0 h5 text-light">Trinidad Municipal College - Teacher</span>
             <div class="user-info d-flex align-items-center">
                 <i data-lucide="user" class="me-2"></i>
-                <span>Hello, Admin</span>
+                <span>Hello, Teacher</span>
             </div>
         </div>
     </div>
@@ -96,11 +82,9 @@
     <script> lucide.createIcons(); </script>
 
     @RenderSection("Scripts", required: false)
-
 </body>
 
 <style>
-    /* === SIDEBAR === */
     .sidebar {
         position: fixed;
         left: 0;
@@ -114,14 +98,10 @@
         padding-top: 20px;
     }
 
-    .sidebar-logo {
-        margin-bottom: 30px;
+    .sidebar-logo img {
+        width: 80px;
+        margin-bottom: 10px;
     }
-
-        .sidebar-logo img {
-            width: 80px;
-            margin-bottom: 10px;
-        }
 
     .sidebar-links {
         display: flex;
@@ -139,19 +119,11 @@
         transition: 0.3s;
     }
 
-        .sidebar a:hover,
-        .sidebar a.active {
+        .sidebar a:hover, .sidebar a.active {
             background: #004080;
             color: #fff;
         }
 
-        .sidebar a.logout {
-            margin-top: auto;
-            border-top: 1px solid #004080;
-            padding-top: 15px;
-        }
-
-    /* === TOP NAVBAR === */
     .top-navbar {
         position: fixed;
         left: 240px;
@@ -166,7 +138,6 @@
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
-    /* === MAIN CONTENT === */
     .main-content {
         margin-left: 240px;
         margin-top: 60px;
@@ -176,22 +147,5 @@
         flex-direction: column;
         justify-content: space-between;
     }
-
-    /* === FOOTER === */
-    .footer-content {
-        background: #fff;
-        border-top: 1px solid #dee2e6;
-        color: #333;
-    }
-
-    .social-icons a {
-        color: #004080;
-        margin-left: 10px;
-        text-decoration: none;
-    }
-
-        .social-icons a:hover {
-            color: #007bff;
-        }
 </style>
 </html>

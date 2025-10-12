@@ -1,0 +1,109 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Teachers";
+}
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">Teacher Records</h2>
+        <button class="btn btn-primary">
+            <i data-lucide="user-plus" class="me-1"></i> Add New Teacher
+        </button>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body d-flex align-items-center gap-3 flex-wrap">
+            <div class="input-group w-auto">
+                <span class="input-group-text bg-white border-end-0"><i data-lucide="search"></i></span>
+                <input type="text" class="form-control border-start-0" placeholder="Search teacher name...">
+            </div>
+            <select class="form-select w-auto">
+                <option>All Departments</option>
+                <option>College of Education</option>
+                <option>College of Information Technology</option>
+                <option>College of Business</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- TEACHER TABLE -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Teacher Name</th>
+                        <th>Department</th>
+                        <th>Email</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Prof. Maria Santos</td>
+                        <td>College of Education</td>
+                        <td>m.santos@tmc.edu.ph</td>
+                        <td>09123456789</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning"><i data-lucide="edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Mr. John Cruz</td>
+                        <td>College of Business</td>
+                        <td>j.cruz@tmc.edu.ph</td>
+                        <td>09981234567</td>
+                        <td><span class="badge bg-secondary">Inactive</span></td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye"></i></button>
+                            <button class="btn btn-sm btn-outline-warning"><i data-lucide="edit"></i></button>
+                            <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        lucide.createIcons();
+    </script>
+}
+
+<style>
+    h2.fw-bold {
+        letter-spacing: 0.5px;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f0f6ff;
+    }
+
+    .btn-outline-primary i,
+    .btn-outline-warning i,
+    .btn-outline-danger i {
+        width: 16px;
+        height: 16px;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+    }
+</style>

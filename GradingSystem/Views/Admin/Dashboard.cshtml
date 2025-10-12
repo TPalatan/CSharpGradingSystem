@@ -3,90 +3,168 @@
     ViewData["Title"] = "Admin Dashboard";
   
 }
-@section Styles {
-    <link rel="stylesheet" href="~/css/admin-dashboard.css" asp-append-version="true" />
-}
 
 
-<div class="admin-dashboard">
+<section class="dashboard-section">
 
-    <!-- Welcome Banner -->
-    <div class="welcome-banner">
-        <div class="welcome-text">
-            <h2>Welcome, <span class="admin-name">Admin</span> 👋</h2>
-            <p>Manage the system efficiently and stay up to date.</p>
-        </div>
-    </div>
+    <h2 class="dashboard-title">Admin Dashboard</h2>
 
-    <!-- Stats Cards -->
-    <div class="stats-cards">
-        <div class="stat-card students-card">
-            <div class="stat-icon"><i data-lucide="users"></i></div>
-            <div class="stat-info">
+    <!-- Summary Cards -->
+    <div class="dashboard-cards">
+        <div class="card">
+            <div class="card-icon"><i data-lucide="users"></i></div>
+            <div class="card-info">
                 <h5>Total Students</h5>
-                <h2>125</h2>
+                <h2>0</h2>
             </div>
         </div>
 
-        <div class="stat-card teachers-card">
-            <div class="stat-icon"><i data-lucide="user-check"></i></div>
-            <div class="stat-info">
+        <div class="card">
+            <div class="card-icon"><i data-lucide="user-check"></i></div>
+            <div class="card-info">
                 <h5>Total Teachers</h5>
-                <h2>25</h2>
+                <h2>0</h2>
             </div>
         </div>
 
-        <div class="stat-card subjects-card">
-            <div class="stat-icon"><i data-lucide="book-open"></i></div>
-            <div class="stat-info">
-                <h5>Total Subjects</h5>
-                <h2>40</h2>
+        <div class="card">
+            <div class="card-icon"><i data-lucide="book"></i></div>
+            <div class="card-info">
+                <h5>Total Courses</h5>
+                <h2>0</h2>
             </div>
         </div>
 
-        <div class="stat-card reports-card">
-            <div class="stat-icon"><i data-lucide="file-text"></i></div>
-            <div class="stat-info">
-                <h5>Reports</h5>
-                <h2>12</h2>
-            </div>
-        </div>
-    </div>
-
-    <!-- Announcements -->
-    <div class="announcements mt-4">
-        <div class="announcements-header">
-            <h4><i data-lucide="bell"></i> Announcements</h4>
-        </div>
-
-        <div class="announcement-list">
-            <div class="announcement-card">
-                <div class="announcement-icon"><i data-lucide="info"></i></div>
-                <div class="announcement-content">
-                    <h5>New Semester Schedule Released</h5>
-                    <p>The new semester schedule is now available for students and teachers.</p>
-                </div>
-            </div>
-
-            <div class="announcement-card">
-                <div class="announcement-icon"><i data-lucide="check-circle"></i></div>
-                <div class="announcement-content">
-                    <h5>System Maintenance Completed</h5>
-                    <p>The grading system will now be fully functional with new updates.</p>
-                </div>
-            </div>
-
-            <div class="announcement-card">
-                <div class="announcement-icon"><i data-lucide="alert-circle"></i></div>
-                <div class="announcement-content">
-                    <h5>Grades Submission Deadline</h5>
-                    <p>All teachers must submit grades before the end of the week.</p>
-                </div>
+        <div class="card">
+            <div class="card-icon"><i data-lucide="layers"></i></div>
+            <div class="card-info">
+                <h5>Total Classes</h5>
+                <h2>0</h2>
             </div>
         </div>
     </div>
 
-</div>
+    <!-- Recent Activity Table -->
+    <div class="recent-activities mt-4">
+        <h4>Recent Activities</h4>
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Activity</th>
+                    <th>Performed By</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Oct 10, 2025</td>
+                    <td>New student record added</td>
+                    <td>Registrar Admin</td>
+                </tr>
+                <tr>
+                    <td>Oct 09, 2025</td>
+                    <td>Grade verification completed</td>
+                    <td>Registrar Staff</td>
+                </tr>
+                <tr>
+                    <td>Oct 08, 2025</td>
+                    <td>Course updated</td>
+                    <td>Registrar Office</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+@section Styles {
+    <style>
+        .dashboard-section {
+            padding: 20px;
+            background-color: #f9fafc;
+            min-height: 100vh;
+        }
+
+        .dashboard-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        /* Cards Layout */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            }
+
+        .card-icon {
+            background-color: #007bff;
+            color: white;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+            .card-icon i {
+                width: 28px;
+                height: 28px;
+            }
+
+        .card-info h5 {
+            color: #666;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .card-info h2 {
+            font-weight: 700;
+            color: #007bff;
+            margin-top: 5px;
+        }
+
+        /* Table Section */
+        .recent-activities {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+        }
+
+            .recent-activities h4 {
+                margin-bottom: 20px;
+                font-weight: 600;
+                color: #333;
+            }
+
+        .table th {
+            color: #555;
+            font-weight: 600;
+        }
+
+        .table td {
+            color: #333;
+        }
+    </style>
+}
 
 @section Scripts {
     <script>

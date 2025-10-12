@@ -12,7 +12,8 @@ namespace AuthDemo.Controllers
         private readonly List<User> _users = new()
         {
             new User { Username = "admin", Password = "admin123", Role = "Admin" },
-            new User { Username = "user", Password = "user123", Role = "User" }
+            new User { Username = "user", Password = "user123", Role = "User" },
+            new User { Username = "teacher", Password = "teacher123", Role = "Teacher" }
         };
 
         [HttpGet]
@@ -42,10 +43,17 @@ namespace AuthDemo.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            if (user.Role == "Admin")
-                return RedirectToAction("Dashboard", "Admin");
-            else
-                return RedirectToAction("Dashboard", "User");
+            // Redirect based on role
+            switch (user.Role)
+            {
+                case "Admin":
+                    return RedirectToAction("Dashboard", "Admin");
+                case "Teacher":
+                    return RedirectToAction("Dashboard", "Teacher");
+                case "User":
+                default:
+                    return RedirectToAction("Dashboard", "User");
+            }
         }
 
         public async Task<IActionResult> Logout()
