@@ -107,49 +107,54 @@
         top: 0;
         bottom: 0;
         width: 240px;
-        background: #002b5b;
-        color: #fff;
+        background: #ffffff; /* white background */
+        color: #212529; /* dark gray text for contrast */
         display: flex;
         flex-direction: column;
         padding-top: 20px;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05); /* subtle shadow for separation */
     }
 
-    .sidebar-logo {
-        margin-bottom: 30px;
-    }
-
-        .sidebar-logo img {
-            width: 80px;
-            margin-bottom: 10px;
+        /* Sidebar links */
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: #212529; /* dark gray text */
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
         }
 
-    .sidebar-links {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+            /* Hover and active states */
+            .sidebar a:hover,
+            .sidebar a.active {
+                background: #f1f3f5; /* light gray highlight */
+                color: #0d6efd; /* primary blue for emphasis */
+            }
+
+    /* Sidebar logo text */
+    .sidebar-logo h4 {
+        color: #0d6efd; /* highlight school/brand name */
+        font-weight: 600;
+        margin-top: 10px;
     }
 
-    .sidebar a {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 20px;
-        color: #ddd;
-        text-decoration: none;
-        transition: 0.3s;
+    /* Logout link */
+    .sidebar a.logout {
+        margin-top: auto;
+        border-top: 1px solid #e9ecef;
+        padding-top: 15px;
+        color: #dc3545;
     }
 
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: #004080;
-            color: #fff;
+        .sidebar a.logout:hover {
+            background: #f8d7da;
+            color: #b02a37;
         }
 
-        .sidebar a.logout {
-            margin-top: auto;
-            border-top: 1px solid #004080;
-            padding-top: 15px;
-        }
 
     /* === TOP NAVBAR === */
     .top-navbar {
