@@ -1,0 +1,152 @@
+﻿@model GradingSystem.Models.Student
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Add New Student";
+}
+
+<section class="add-student py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-black">Add New Student 👨‍🎓</h1>
+            <p class="text-secondary fs-6">Fill out the form below to register a new student.</p>
+        </div>
+
+        <form asp-action="CreateStudent" method="post" class="row g-4 needs-validation" novalidate>
+            <div class="col-md-6">
+                <label asp-for="StudentID" class="form-label">Student ID</label>
+                <input asp-for="StudentID" class="form-control form-control-lg" readonly />
+                <span asp-validation-for="StudentID" class="text-danger small"></span>
+            </div>
+
+
+            <div class="col-md-6">
+                <label asp-for="FullName" class="form-label">Full Name</label>
+                <input asp-for="FullName" class="form-control form-control-lg" placeholder="Enter full name" required />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Course" class="form-label">Course</label>
+                <input asp-for="Course" class="form-control form-control-lg" placeholder="Enter course" required />
+                <span asp-validation-for="Course" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="YearLevel" class="form-label">Year Level</label>
+                <select asp-for="YearLevel" class="form-select form-select-lg" required>
+                    <option value="">-- Select Year Level --</option>
+                    <option>1st Year</option>
+                    <option>2nd Year</option>
+                    <option>3rd Year</option>
+                    <option>4th Year</option>
+                </select>
+                <span asp-validation-for="YearLevel" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select form-select-lg">
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger small"></span>
+            </div>
+
+            <div class="col-12 text-center mt-4">
+                <button type="submit" class="btn btn-dark btn-lg px-5">
+                    <i class="bi bi-person-plus-fill me-2"></i> Add Student
+                </button>
+            </div>
+
+            <div class="col-12 text-center mt-3">
+                <a asp-action="Student" class="text-muted text-decoration-none small">
+                    ← Back to Student List
+                </a>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success mt-4 text-center col-12">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+        </form>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+            color: #000;
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            color: #000;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #000;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #ccc;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            color: #000;
+            transition: all 0.2s ease-in-out;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #000;
+                box-shadow: 0 0 6px rgba(0,0,0,0.2);
+            }
+
+        .btn-dark {
+            background-color: #000;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+            .btn-dark:hover {
+                background-color: #333;
+                transform: scale(1.05);
+            }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 10px;
+            border: none;
+        }
+
+        a.text-muted:hover {
+            color: #000 !important;
+            text-decoration: underline;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+}

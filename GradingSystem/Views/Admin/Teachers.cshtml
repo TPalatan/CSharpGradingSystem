@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IEnumerable<GradingSystem.Models.Teacher>
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Teachers";
 }
@@ -7,10 +8,10 @@
 
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-primary">Teacher Records</h2>
-        <button class="btn btn-primary">
+        <h2 class="fw-bold text-dark">Teacher Records</h2>
+        <a asp-action="CreateTeacher" class="btn btn-primary">
             <i data-lucide="user-plus" class="me-1"></i> Add New Teacher
-        </button>
+        </a>
     </div>
 
     <!-- SEARCH BAR -->
@@ -18,9 +19,9 @@
         <div class="card-body d-flex align-items-center gap-3 flex-wrap">
             <div class="input-group w-auto">
                 <span class="input-group-text bg-white border-end-0"><i data-lucide="search"></i></span>
-                <input type="text" class="form-control border-start-0" placeholder="Search teacher name...">
+                <input type="text" class="form-control border-start-0" placeholder="Search teacher name..." disabled>
             </div>
-            <select class="form-select w-auto">
+            <select class="form-select w-auto" disabled>
                 <option>All Departments</option>
                 <option>College of Education</option>
                 <option>College of Information Technology</option>
@@ -32,6 +33,15 @@
     <!-- TEACHER TABLE -->
     <div class="card shadow-sm border-0">
         <div class="card-body">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+            }
+
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
@@ -45,32 +55,48 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Prof. Maria Santos</td>
-                        <td>College of Education</td>
-                        <td>m.santos@tmc.edu.ph</td>
-                        <td>09123456789</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye"></i></button>
-                            <button class="btn btn-sm btn-outline-warning"><i data-lucide="edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Mr. John Cruz</td>
-                        <td>College of Business</td>
-                        <td>j.cruz@tmc.edu.ph</td>
-                        <td>09981234567</td>
-                        <td><span class="badge bg-secondary">Inactive</span></td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye"></i></button>
-                            <button class="btn btn-sm btn-outline-warning"><i data-lucide="edit"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash"></i></button>
-                        </td>
-                    </tr>
+                    @if (Model != null && Model.Any())
+                    {
+                        int i = 1;
+                        foreach (var teacher in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td>@teacher.FullName</td>
+                                <td>@teacher.Department</td>
+                                <td>@teacher.Email</td>
+                                <td>@teacher.ContactNumber</td>
+                                <td>
+                                    @if (teacher.Status == "Active")
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="EditTeacher" asp-route-id="@teacher.Id" class="btn btn-sm btn-outline-warning me-1" title="Edit">
+                                        <i data-lucide="edit"></i>
+                                    </a>
+                                    <a asp-action="DeleteTeacher" asp-route-id="@teacher.Id" class="btn btn-sm btn-outline-danger" title="Delete"
+                                       onclick="return confirm('Are you sure you want to delete this teacher?');">
+                                        <i data-lucide="trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">
+                                No teacher records found.
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -105,5 +131,9 @@
 
     .badge {
         font-size: 0.8rem;
+    }
+
+    .btn {
+        border-radius: 8px;
     }
 </style>

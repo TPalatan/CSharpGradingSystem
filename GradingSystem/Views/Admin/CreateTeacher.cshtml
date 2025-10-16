@@ -1,0 +1,61 @@
+﻿@model GradingSystem.Models.Teacher
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Add New Teacher";
+}
+
+<div class="container py-4">
+    <h2 class="fw-bold mb-4 text-dark">Add New Teacher 👩‍🏫</h2>
+
+    <form asp-action="CreateTeacher" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="FullName" class="form-label fw-semibold"></label>
+            <input asp-for="FullName" class="form-control" placeholder="Enter full name" />
+            <span asp-validation-for="FullName" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Department" class="form-label fw-semibold"></label>
+            <input asp-for="Department" class="form-control" placeholder="Enter department" />
+            <span asp-validation-for="Department" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Email" class="form-label fw-semibold"></label>
+            <input asp-for="Email" class="form-control" placeholder="Enter email address" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="ContactNumber" class="form-label fw-semibold"></label>
+            <input asp-for="ContactNumber" class="form-control" placeholder="Enter contact number" />
+            <span asp-validation-for="ContactNumber" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Status" class="form-label fw-semibold"></label>
+            <select asp-for="Status" class="form-select">
+                <option>Active</option>
+                <option>Inactive</option>
+            </select>
+        </div>
+
+        <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-dark px-4">
+                <i class="bi bi-person-plus-fill me-2"></i> Add Teacher
+            </button>
+            <a asp-action="Teachers" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success mt-3">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,67 +1,87 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using CSharpGradingSystem.Data;
+using GradingSystem.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using AuthDemo.Models;
+using System.Linq;
 
-namespace AuthDemo.Controllers
+namespace CSharpGradingSystem.Controllers
 {
     public class AccountController : Controller
     {
-        // Hardcoded users for demo (replace with a database later)
-        private readonly List<User> _users = new()
+        private readonly ApplicationDbContext _context;
+
+        public AccountController(ApplicationDbContext context)
         {
-            new User { Username = "admin", Password = "admin123", Role = "Admin" },
-            new User { Username = "user", Password = "user123", Role = "User" },
-            new User { Username = "teacher", Password = "teacher123", Role = "Teacher" }
-        };
-
-        [HttpGet]
-        public IActionResult Login() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
-        {
-            var user = _users.FirstOrDefault(u =>
-                u.Username == username && u.Password == password);
-
-            if (user == null)
-            {
-                ViewBag.Error = "Invalid username or password";
-                return View();
-            }
-
-            // Create user claims
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            // Redirect based on role
-            switch (user.Role)
-            {
-                case "Admin":
-                    return RedirectToAction("Dashboard", "Admin");
-                case "Teacher":
-                    return RedirectToAction("Dashboard", "Teacher");
-                case "User":
-                default:
-                    return RedirectToAction("Dashboard", "User");
-            }
+            _context = context;
         }
 
-        public async Task<IActionResult> Logout()
+        // 🔹 GET: Login Page
+        [HttpGet]
+        public IActionResult Login()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return View();
+        }
+
+        // 🔹 POST: Handle Login
+        [HttpPost]
+        [HttpPost]
+        public IActionResult Login(string username, string password)
+        {
+            var user = _context.UserAccounts
+                .FirstOrDefault(u => u.Username == username && u.Password == password);
+
+            if (user != null)
+            {
+                // ✅ Save session data
+                HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetString("Role", user.Role);
+
+                // ✅ Redirect based on role
+                if (user.Role == "Admin")
+                {
+                    TempData["SuccessMessage"] = "Welcome back, Admin!";
+                    return RedirectToAction("Dashboard", "Admin");
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Login successful!";
+                    return RedirectToAction("Dashboard", "User");
+                }
+            }
+
+            ViewBag.Error = "Invalid username or password.";
+            return View();
+        }
+
+
+        // 🔹 GET: Register
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // 🔹 POST: Register new user
+        [HttpPost]
+        public IActionResult Create(UserAccount model)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.UserAccounts.Add(model);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Account created successfully! You can now log in.";
+                return RedirectToAction("Login");
+            }
+
+            return View(model);
+        }
+
+        // 🔹 Logout
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            TempData["SuccessMessage"] = "You have been logged out successfully.";
             return RedirectToAction("Login");
         }
-
-        public IActionResult AccessDenied() => Content("Access Denied");
     }
 }

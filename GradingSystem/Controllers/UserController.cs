@@ -1,19 +1,10 @@
-﻿using GradingSystem.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AuthDemo.Controllers
+namespace CSharpGradingSystem.Controllers
 {
-    [Authorize(Policy = "UserOnly")]
     public class UserController : Controller
     {
         public IActionResult Dashboard()
-        {
-            return View();
-        }
-
-        public IActionResult Index()
         {
             return View();
         }
@@ -23,37 +14,19 @@ namespace AuthDemo.Controllers
             return View();
         }
 
-        public IActionResult StudentProfile()
-        {
-            return View();
-        }
-
-
-        public IActionResult Subjects()
-        {
-            return View();
-        }
-
-
-
-        public IActionResult AdminDashboard()
-        {
-            return View();
-        }
-
-
-
         public IActionResult Privacy()
         {
             return View();
         }
 
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult StudentProfile()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
+        }
+
+        public IActionResult Subjects()
+        {
+            return View();
         }
     }
 }
-
