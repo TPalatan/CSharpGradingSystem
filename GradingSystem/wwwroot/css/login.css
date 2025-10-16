@@ -1,125 +1,66 @@
-﻿/* === Modern Login Page Styling === */
+﻿/* General Page Style */
 body, html {
     height: 100%;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
-    color: #333;
+    margin: 0;
+    color: #fff;
+    /* ✅ Cool background image + gradient overlay */
+    background: linear-gradient(rgba(15, 32, 39, 0.6), rgba(32, 58, 67, 0.6), rgba(44, 83, 100, 0.6)), url('/images/bg-login.jpg') no-repeat center center fixed;
+    background-size: cover;
 }
 
-.login-page {
-    backdrop-filter: blur(8px);
-}
-
-.bg-glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
+/* Login Card Styling */
 .login-card {
-    width: 400px;
-    transition: all 0.3s ease-in-out;
+    width: 380px;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
     .login-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     }
 
+/* Form Elements */
 .form-control {
-    border: 1px solid #ddd;
-    transition: all 0.2s;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
     .form-control:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2);
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        color: #fff;
     }
 
+::placeholder {
+    color: #ddd;
+}
+
+/* Buttons */
 .login-btn {
-    transition: all 0.3s;
-    background: linear-gradient(135deg, #007bff, #00b4d8);
+    background: linear-gradient(90deg, #0072ff, #00c6ff);
     border: none;
+    transition: background 0.3s ease, transform 0.2s;
 }
 
     .login-btn:hover {
-        background: linear-gradient(135deg, #0056b3, #0096c7);
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
         transform: scale(1.03);
     }
 
+/* Links */
 .hover-link:hover {
     text-decoration: underline;
 }
 
-/* Small devices (mobile) */
-@media (max-width: 480px) {
-    .login-card {
-        width: 90%;
-        padding: 2rem 1.2rem;
-    }
-}
-
-
-/* === Modern Auth Page Styling === */
-body, html {
-    height: 100%;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
-    color: #333;
-}
-
-.login-page {
-    backdrop-filter: blur(8px);
-}
-
+/* Glass Effect Background */
 .bg-glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
-
-.login-card {
-    width: 400px;
-    transition: all 0.3s ease-in-out;
-}
-
-    .login-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-
-.form-control,
-.form-select {
-    border: 1px solid #ddd;
-    transition: all 0.2s;
-}
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2);
-    }
-
-.register-btn {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    border: none;
-    transition: all 0.3s;
-}
-
-    .register-btn:hover {
-        background: linear-gradient(135deg, #218838, #17a589);
-        transform: scale(1.03);
-    }
-
-.hover-link:hover {
-    text-decoration: underline;
-}
-
-/* Mobile Responsive */
-@media (max-width: 480px) {
-    .login-card {
-        width: 90%;
-        padding: 2rem 1.2rem;
-    }
-}
-
