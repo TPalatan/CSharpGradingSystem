@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GradingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251016013111_createtable")]
-    partial class createtable
+    [Migration("20251022145714_createTable")]
+    partial class createTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,6 +103,12 @@ namespace GradingSystem.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsPending")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -121,6 +127,17 @@ namespace GradingSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserAccounts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsApproved = true,
+                            IsPending = false,
+                            Password = "admin123",
+                            Role = "Admin",
+                            Username = "admin"
+                        });
                 });
 #pragma warning restore 612, 618
         }

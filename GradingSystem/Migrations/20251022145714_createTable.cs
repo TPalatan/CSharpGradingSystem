@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GradingSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class createtable : Migration
+    public partial class createTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,13 +71,20 @@ namespace GradingSystem.Migrations
                     Password = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Role = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsApproved = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    IsPending = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserAccounts", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.InsertData(
+                table: "UserAccounts",
+                columns: new[] { "Id", "IsApproved", "IsPending", "Password", "Role", "Username" },
+                values: new object[] { 1, true, false, "admin123", "Admin", "admin" });
         }
 
         /// <inheritdoc />

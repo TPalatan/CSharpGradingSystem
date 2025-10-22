@@ -24,7 +24,6 @@ namespace CSharpGradingSystem.Controllers
 
         // 🔹 POST: Handle Login
         [HttpPost]
-        [HttpPost]
         public IActionResult Login(string username, string password)
         {
             var user = _context.UserAccounts
@@ -32,6 +31,15 @@ namespace CSharpGradingSystem.Controllers
 
             if (user != null)
             {
+                // 🚫 Check if the account is approved
+                if (!user.IsApproved)
+                {
+                    ViewBag.Error = user.IsPending
+                        ? "Your account is still pending admin approval."
+                        : "Your account was not approved by the admin.";
+                    return View();
+                }
+
                 // ✅ Save session data
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetString("Role", user.Role);
@@ -41,6 +49,11 @@ namespace CSharpGradingSystem.Controllers
                 {
                     TempData["SuccessMessage"] = "Welcome back, Admin!";
                     return RedirectToAction("Dashboard", "Admin");
+                }
+                else if (user.Role == "Teacher")
+                {
+                    TempData["SuccessMessage"] = "Welcome back, Teacher!";
+                    return RedirectToAction("Dashboard", "Teacher");
                 }
                 else
                 {
@@ -53,23 +66,27 @@ namespace CSharpGradingSystem.Controllers
             return View();
         }
 
-
-        // 🔹 GET: Register
+        // 🔹 GET: Register Page
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // 🔹 POST: Register new user
+        // 🔹 POST: Register new user (requires admin approval)
         [HttpPost]
         public IActionResult Create(UserAccount model)
         {
             if (ModelState.IsValid)
             {
+                // 🟡 Mark new account as pending approval
+                model.IsApproved = false;
+                model.IsPending = true;
+
                 _context.UserAccounts.Add(model);
                 _context.SaveChanges();
-                TempData["SuccessMessage"] = "Account created successfully! You can now log in.";
+
+                TempData["SuccessMessage"] = "Your account request has been sent. Please wait for admin approval.";
                 return RedirectToAction("Login");
             }
 

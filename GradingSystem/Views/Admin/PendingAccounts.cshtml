@@ -1,0 +1,50 @@
+﻿@model IEnumerable<GradingSystem.Models.UserAccount>
+@{
+    ViewData["Title"] = "Pending Accounts";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // ✅ Use your Admin Layout file
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">Pending Account Requests</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <table class="table table-striped shadow-sm bg-white rounded">
+        <thead class="table-primary">
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No pending accounts found.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Username</td>
+                        <td>@user.Role</td>
+                        <td class="text-center">
+                            <a href="@Url.Action("Approve", "Admin", new { id = user.Id })" class="btn btn-success btn-sm me-2">Approve</a>
+                            <a href="@Url.Action("Reject", "Admin", new { id = user.Id })" class="btn btn-danger btn-sm">Reject</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

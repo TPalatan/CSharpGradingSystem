@@ -100,6 +100,12 @@ namespace GradingSystem.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsPending")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -118,6 +124,17 @@ namespace GradingSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserAccounts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsApproved = true,
+                            IsPending = false,
+                            Password = "admin123",
+                            Role = "Admin",
+                            Username = "admin"
+                        });
                 });
 #pragma warning restore 612, 618
         }

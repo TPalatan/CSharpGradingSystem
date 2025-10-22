@@ -20,27 +20,84 @@ namespace CSharpGradingSystem.Controllers
         // ==========================
         public IActionResult Dashboard()
         {
-            return View();
+            // Show all pending users count
+            var pendingUsers = _context.UserAccounts
+                .Where(u => u.IsPending)
+                .ToList();
+
+            ViewBag.PendingCount = pendingUsers.Count;
+            return View(pendingUsers);
+        }
+
+        // ==========================
+        // 🔹 PENDING ACCOUNTS PAGE
+        // ==========================
+        [HttpGet]
+        public IActionResult PendingAccounts()
+        {
+            var pendingUsers = _context.UserAccounts
+                .Where(u => u.IsPending && !u.IsApproved)
+                .ToList();
+
+            if (!pendingUsers.Any())
+            {
+                TempData["InfoMessage"] = "No pending accounts at the moment.";
+            }
+
+            return View(pendingUsers);
+        }
+
+        // ✅ APPROVE ACCOUNT
+        [HttpGet]
+        public IActionResult Approve(int id)
+        {
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction(nameof(PendingAccounts));
+            }
+
+            user.IsApproved = true;
+            user.IsPending = false;
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = $"Account '{user.Username}' approved successfully!";
+            return RedirectToAction(nameof(PendingAccounts));
+        }
+
+        // ❌ REJECT ACCOUNT
+        [HttpGet]
+        public IActionResult Reject(int id)
+        {
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction(nameof(PendingAccounts));
+            }
+
+            _context.UserAccounts.Remove(user);
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = $"Account '{user.Username}' has been rejected and removed.";
+            return RedirectToAction(nameof(PendingAccounts));
         }
 
         // ==========================
         // 🔹 STUDENT MANAGEMENT
         // ==========================
-
-        // 🔹 GET: Student List
         public IActionResult Student()
         {
             var students = _context.Students.ToList();
             return View(students);
         }
 
-        // 🔹 GET: Create New Student (Auto-generate StudentID)
         [HttpGet]
         public IActionResult CreateStudent()
         {
-            string yearPrefix = DateTime.Now.Year.ToString().Substring(2, 2); // e.g. 2025 -> "25"
+            string yearPrefix = DateTime.Now.Year.ToString().Substring(2, 2);
 
-            // Get last student ID for this year
             var latestStudent = _context.Students
                 .Where(s => s.StudentID.StartsWith(yearPrefix))
                 .OrderByDescending(s => s.StudentID)
@@ -51,9 +108,7 @@ namespace CSharpGradingSystem.Controllers
             {
                 string[] parts = latestStudent.StudentID.Split('-');
                 if (parts.Length == 2 && int.TryParse(parts[1], out int lastNumber))
-                {
                     nextNumber = lastNumber + 1;
-                }
             }
 
             string generatedId = $"{yearPrefix}-{nextNumber:D4}";
@@ -62,14 +117,12 @@ namespace CSharpGradingSystem.Controllers
             return View(student);
         }
 
-        // 🔹 POST: Create New Student
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateStudent(Student model)
         {
             if (ModelState.IsValid)
             {
-                // ✅ Recheck auto-generation in case of concurrency
                 string yearPrefix = DateTime.Now.Year.ToString().Substring(2, 2);
 
                 var latestStudent = _context.Students
@@ -82,13 +135,10 @@ namespace CSharpGradingSystem.Controllers
                 {
                     string[] parts = latestStudent.StudentID.Split('-');
                     if (parts.Length == 2 && int.TryParse(parts[1], out int lastNumber))
-                    {
                         nextNumber = lastNumber + 1;
-                    }
                 }
 
                 model.StudentID = $"{yearPrefix}-{nextNumber:D4}";
-
                 _context.Students.Add(model);
                 _context.SaveChanges();
 
@@ -100,7 +150,6 @@ namespace CSharpGradingSystem.Controllers
             return View(model);
         }
 
-        // 🔹 GET: Edit Student
         [HttpGet]
         public IActionResult EditStudent(int id)
         {
@@ -111,7 +160,6 @@ namespace CSharpGradingSystem.Controllers
             return View(student);
         }
 
-        // 🔹 POST: Edit Student
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult EditStudent(Student model)
@@ -128,7 +176,6 @@ namespace CSharpGradingSystem.Controllers
             return View(model);
         }
 
-        // 🔹 DELETE Student directly (no confirmation)
         [HttpGet]
         public IActionResult DeleteStudent(int id)
         {
@@ -144,24 +191,20 @@ namespace CSharpGradingSystem.Controllers
         }
 
         // ==========================
-        // 🔹 SUBJECT & TEACHER MANAGEMENT
+        // 🔹 TEACHER MANAGEMENT
         // ==========================
-
-
         public IActionResult Teachers()
         {
             var teachers = _context.Teachers.ToList();
             return View(teachers);
         }
 
-        // 🔹 GET: Create New Teacher
         [HttpGet]
         public IActionResult CreateTeacher()
         {
             return View();
         }
 
-        // 🔹 POST: Create New Teacher
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateTeacher(Teacher model)
@@ -178,7 +221,6 @@ namespace CSharpGradingSystem.Controllers
             return View(model);
         }
 
-        // 🔹 GET: Edit Teacher
         [HttpGet]
         public IActionResult EditTeacher(int id)
         {
@@ -189,7 +231,6 @@ namespace CSharpGradingSystem.Controllers
             return View(teacher);
         }
 
-        // 🔹 POST: Edit Teacher
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult EditTeacher(Teacher model)
@@ -206,7 +247,6 @@ namespace CSharpGradingSystem.Controllers
             return View(model);
         }
 
-        // 🔹 DELETE Teacher
         [HttpGet]
         public IActionResult DeleteTeacher(int id)
         {
@@ -219,12 +259,14 @@ namespace CSharpGradingSystem.Controllers
             TempData["SuccessMessage"] = "Teacher deleted successfully!";
             return RedirectToAction(nameof(Teachers));
         }
+
+        // ==========================
+        // 🔹 SUBJECT MANAGEMENT
+        // ==========================
         public IActionResult Subjects()
         {
             return View();
         }
-
-     
 
         public IActionResult AssignSubject()
         {

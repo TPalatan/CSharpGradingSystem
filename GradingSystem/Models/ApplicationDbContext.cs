@@ -14,5 +14,22 @@ namespace CSharpGradingSystem.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // ✅ Seed a default admin user
+            modelBuilder.Entity<UserAccount>().HasData(
+                new UserAccount
+                {
+                    Id = 1,
+                    Username = "admin",
+                    Password = "admin123",   // ⚠️ For testing only — hash later
+                    Role = "Admin",
+                    IsApproved = true,
+                    IsPending = false
+                }
+            );
+        }
     }
 }

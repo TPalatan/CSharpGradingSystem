@@ -20,5 +20,9 @@ namespace GradingSystem.Models
         [Required]
         [MaxLength(50)]
         public string Role { get; set; } = "User"; // Example: "Admin" or "User"
+
+
+        public bool IsApproved { get; set; } = false;
+        public bool IsPending { get; set; } = true;
     }
 }
