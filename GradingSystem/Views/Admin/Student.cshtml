@@ -5,175 +5,114 @@
     ViewData["Title"] = "Student Records";
 }
 
-<section class="student-records-section">
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="page-title">Student Records</h2>
-        <a asp-action="CreateStudent" class="btn btn-primary">
-            <i data-lucide="user-plus"></i> Add New Student
-        </a>
-    </div>
-
-    <!-- ✅ Success Message -->
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show rounded-pill py-2" role="alert">
-            <i data-lucide="check-circle" class="me-1"></i>
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-
-    <!-- Search and Filter -->
-    <div class="search-filter mb-3 d-flex flex-wrap gap-2 align-items-center">
-        <div class="input-group w-auto">
-            <span class="input-group-text bg-white border-end-0">
-                <i data-lucide="search"></i>
-            </span>
-            <input type="text" class="form-control border-start-0" placeholder="Search by name or ID...">
+<section class="student-records py-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">Student Records</h2>
+            <a asp-action="CreateStudent" class="btn btn-success">
+                <i class="bi bi-person-plus-fill me-1"></i> Add New Student
+            </a>
         </div>
 
-        <select class="form-select w-auto">
-            <option selected>All Courses</option>
-            <option>BSIT</option>
-            <option>BSED</option>
-            <option>BEED</option>
-        </select>
-
-        <select class="form-select w-auto">
-            <option selected>All Years</option>
-            <option>1st Year</option>
-            <option>2nd Year</option>
-            <option>3rd Year</option>
-            <option>4th Year</option>
-        </select>
-
-        <button class="btn btn-outline-secondary">
-            <i data-lucide="filter"></i> Filter
-        </button>
-    </div>
-
-    <!-- Student Table -->
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Student ID</th>
-                        <th>Full Name</th>
-                        <th>Course</th>
-                        <th>Year Level</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var student in Model)
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Course</th>
+                            <th>Year Level</th>
+                            <th>Status</th>
+                            <th>User Account</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var student in Model)
+                            {
+                                <tr>
+                                    <td>@student.StudentID</td>
+                                    <td>@student.FullName</td>
+                                    <td>@student.Course</td>
+                                    <td>@student.YearLevel</td>
+                                    <td>
+                                        @if (student.Status == "Active")
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>@student.UserAccount?.Username</td> <!-- Removed "None" -->
+                                    <td>
+                                        <a asp-action="EditStudent" asp-route-id="@student.Id" class="btn btn-sm btn-outline-warning me-1">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </a>
+                                        <a asp-action="DeleteStudent" asp-route-id="@student.Id"
+                                           onclick="return confirm('Are you sure you want to delete this student?');"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-                                <td>@student.StudentID</td>
-                                <td>@student.FullName</td>
-                                <td>@student.Course</td>
-                                <td>@student.YearLevel</td>
-                                <td>
-                                    @if (student.Status == "Active")
-                                    {
-                                        <span class="badge bg-success">Active</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">Inactive</span>
-                                    }
-                                </td>
-                                <td>
-                                  
-                                    <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-sm btn-outline-warning">
-                                        <i data-lucide="edit"></i>
-                                    </a>
-                                    <a asp-action="DeleteStudent" asp-route-id="@student.Id"
-                                       onclick="return confirm('Are you sure you want to delete this student?');"
-                                       class="btn btn-sm btn-outline-danger">
-                                        <i data-lucide="trash-2"></i>
-                                    </a>
-                                </td>
+                                <td colspan="7" class="text-center text-muted py-4">No students found.</td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">No students found.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-
 </section>
 
 @section Styles {
     <style>
-        .student-records-section {
-            padding: 25px;
-            background-color: #f9fafc;
-        }
-
-        .page-title {
-            font-weight: 700;
-            color: #002b5b;
-        }
-
-        .search-filter .input-group {
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .search-filter input {
-            border-color: #ced4da;
-            box-shadow: none !important;
-        }
-
-        .search-filter select,
-        .search-filter button {
-            border-radius: 8px;
-        }
-
-        table th {
-            color: #495057;
-            font-weight: 600;
-        }
-
-        table td {
-            color: #555;
+        .student-records h2 {
+            letter-spacing: 0.5px;
         }
 
         .card {
-            border-radius: 15px;
+            border-radius: 12px;
         }
 
-        .btn i {
-            width: 18px;
-            height: 18px;
-        }
-
-        .btn-outline-primary:hover {
-            background-color: #002b5b;
-            color: white;
+        .table-hover tbody tr:hover {
+            background-color: #f0f6ff;
         }
 
         .badge {
-            padding: 6px 10px;
             font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 12px;
+        }
+
+        .btn i {
+            margin-right: 3px;
+        }
+
+        .btn-outline-warning:hover {
+            background-color: #ffc107;
+            color: #fff;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        td:empty {
+            background-color: #f8f9fa;
+            color: #999;
+            text-align: center;
         }
     </style>
-}
-
-@section Scripts {
-    <script>
-        lucide.createIcons();
-    </script>
 }

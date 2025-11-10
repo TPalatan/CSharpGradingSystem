@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GradingSystem.Models;
+using System;
 
 namespace CSharpGradingSystem.Data
 {
@@ -11,25 +12,24 @@ namespace CSharpGradingSystem.Data
         }
 
         public DbSet<UserAccount> UserAccounts { get; set; } = null!;
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Student> Students { get; set; } = null!;
+        public DbSet<Teacher> Teachers { get; set; } = null!;
+        public DbSet<Subject> Subjects { get; set; } = null!;
+        public DbSet<StudentSubjectAssignment> StudentSubjectAssignments { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // ✅ Seed a default admin user
-            modelBuilder.Entity<UserAccount>().HasData(
-                new UserAccount
-                {
-                    Id = 1,
-                    Username = "admin",
-                    Password = "admin123",   // ⚠️ For testing only — hash later
-                    Role = "Admin",
-                    IsApproved = true,
-                    IsPending = false
-                }
-            );
+            // ✅ Only use HasData for static data (no dynamic values)
+            // Example:
+            // modelBuilder.Entity<Subject>().HasData(
+            //     new Subject { Id = 1, Name = "English", Code = "ENG101" }
+            // );
         }
+
+        // 🔹 Removed SeedAdmin method
+        // You will manually insert the admin in the database
     }
 }

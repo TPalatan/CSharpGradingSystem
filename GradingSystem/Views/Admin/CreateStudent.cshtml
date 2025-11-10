@@ -1,4 +1,5 @@
 ﻿@model GradingSystem.Models.Student
+
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Add New Student";
@@ -17,7 +18,6 @@
                 <input asp-for="StudentID" class="form-control form-control-lg" readonly />
                 <span asp-validation-for="StudentID" class="text-danger small"></span>
             </div>
-
 
             <div class="col-md-6">
                 <label asp-for="FullName" class="form-label">Full Name</label>
@@ -52,6 +52,22 @@
                 <span asp-validation-for="Status" class="text-danger small"></span>
             </div>
 
+            <div class="col-md-6">
+                <label asp-for="UserAccountId" class="form-label">Assign User Account</label>
+                <select asp-for="UserAccountId" class="form-select form-select-lg" required>
+                    <option value="">-- Select User Account --</option>
+                    @if (ViewBag.UserAccounts != null)
+                    {
+                        foreach (var user in ViewBag.UserAccounts)
+                        {
+                            <option value="@user.Id">@user.Username</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="UserAccountId" class="text-danger small"></span>
+            </div>
+
+
             <div class="col-12 text-center mt-4">
                 <button type="submit" class="btn btn-dark btn-lg px-5">
                     <i class="bi bi-person-plus-fill me-2"></i> Add Student
@@ -73,65 +89,6 @@
         </form>
     </div>
 </section>
-
-@section Styles {
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Poppins', sans-serif;
-            color: #000;
-        }
-
-        h1 {
-            font-size: 2.3rem;
-            color: #000;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #000;
-        }
-
-        .form-control, .form-select {
-            border: 2px solid #ccc;
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            color: #000;
-            transition: all 0.2s ease-in-out;
-        }
-
-            .form-control:focus, .form-select:focus {
-                border-color: #000;
-                box-shadow: 0 0 6px rgba(0,0,0,0.2);
-            }
-
-        .btn-dark {
-            background-color: #000;
-            border-radius: 40px;
-            border: none;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-            .btn-dark:hover {
-                background-color: #333;
-                transform: scale(1.05);
-            }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border-radius: 10px;
-            border: none;
-        }
-
-        a.text-muted:hover {
-            color: #000 !important;
-            text-decoration: underline;
-        }
-    </style>
-}
 
 @section Scripts {
     <script>

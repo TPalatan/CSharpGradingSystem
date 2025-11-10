@@ -1,29 +1,37 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GradingSystem.Models
 {
     public class Student
     {
-
         [Key]
         public int Id { get; set; }
 
         [Required]
-        [Display(Name = "StudentID")]
-        public string StudentID { get; set; } = string.Empty;
+        [MaxLength(20)]
+        public string StudentID { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Full Name")]
-        public string FullName { get; set; } = string.Empty;
+        [MaxLength(100)]
+        public string FullName { get; set; } = null!;
 
         [Required]
-        public string Course { get; set; } = string.Empty;
+        [MaxLength(50)]
+        public string Course { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Year Level")]
-        public string YearLevel { get; set; } = string.Empty;
+        [MaxLength(20)]
+        public string YearLevel { get; set; } = null!;
 
         [Required]
-        public string Status { get; set; } = "Active"; // Default value
+        [MaxLength(10)]
+        public string Status { get; set; } = "Active";
+
+        // Foreign key to UserAccount
+        [Display(Name = "User Account")]
+        public int? UserAccountId { get; set; }  // nullable
+        public UserAccount? UserAccount { get; set; }
+
     }
 }

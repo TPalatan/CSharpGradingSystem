@@ -1,0 +1,114 @@
+﻿@model GradingSystem.Models.Subject
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Add New Subject";
+}
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">Add New Subject</h2>
+        <a href="@Url.Action("Subjects", "Admin")" class="btn btn-secondary">
+            <i data-lucide="arrow-left" class="me-1"></i> Back to Subjects
+        </a>
+    </div>
+
+    <!-- ADD SUBJECT FORM -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form asp-action="AddSubject" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Subject Code</label>
+                        <input asp-for="SubjectCode" class="form-control" placeholder="Enter subject code" required />
+                        <span asp-validation-for="SubjectCode" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Subject Name</label>
+                        <input asp-for="SubjectName" class="form-control" placeholder="Enter subject name" required />
+                        <span asp-validation-for="SubjectName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Department</label>
+                        <select asp-for="Department" class="form-select" required>
+                            <option value="">Select department</option>
+                            <option>College of Education</option>
+                            <option>College of Business</option>
+                            <option>College of Information Technology</option>
+                        </select>
+                        <span asp-validation-for="Department" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Units</label>
+                        <input asp-for="Units" type="number" class="form-control" placeholder="e.g. 3" required />
+                        <span asp-validation-for="Units" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Semester</label>
+                        <select asp-for="Semester" class="form-select" required>
+                            <option value="">Select semester</option>
+                            <option>1st Semester</option>
+                            <option>2nd Semester</option>
+                        </select>
+                        <span asp-validation-for="Semester" class="text-danger"></span>
+                    </div>
+
+                    <!-- Assigned Teacher -->
+                    <div class="col-md-6">
+                        <label class="form-label">Assigned Teacher</label>
+                        <select asp-for="AssignedTeacherId" class="form-select" required>
+                            <option value="">Select teacher</option>
+                            @if (ViewBag.Teachers != null)
+                            {
+                                foreach (var teacher in ViewBag.Teachers)
+                                {
+                                    <option value="@teacher.Id">@teacher.FullName</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="AssignedTeacherId" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i data-lucide="save" class="me-1"></i> Save Subject
+                    </button>
+                    <a href="@Url.Action("Subjects", "Admin")" class="btn btn-secondary ms-2">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.13/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+}
+
+<style>
+    h2.fw-bold {
+        letter-spacing: 0.5px;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+    }
+
+    button i {
+        width: 16px;
+        height: 16px;
+    }
+</style>
