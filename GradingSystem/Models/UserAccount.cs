@@ -4,25 +4,34 @@ namespace GradingSystem.Models
 {
     public class UserAccount
     {
-
-
         [Key]
-        public int Id { get; set; } // Primary key
+        public int Id { get; set; }
 
-        [Required(ErrorMessage = "Username is required")]
+        // 🔹 Email (used for login)
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
         [MaxLength(100)]
-        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = null!;
 
+        // 🔹 Password (hashed)
         [Required(ErrorMessage = "Password is required")]
-        [MaxLength(100)]
-        public string Password { get; set; } = string.Empty;
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
+        public string Password { get; set; } = null!;
 
-        [Required]
-        [MaxLength(50)]
-        public string Role { get; set; } = "User"; // Example: "Admin" or "User"
+        // 🔹 Role (Admin / Teacher / Student)
+        [Required(ErrorMessage = "Role is required")]
+        [StringLength(20)]
+        public string Role { get; set; } = "User";
 
+        // 🔹 Approval status flags
+        public bool IsApproved { get; set; } = false; // approved by admin
+        public bool IsPending { get; set; } = true;   // waiting for approval
 
-        public bool IsApproved { get; set; } = false;
-        public bool IsPending { get; set; } = true;
+        // 🔹 Optional: Timestamp tracking
+        [DataType(DataType.DateTime)]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        [DataType(DataType.DateTime)]
+        public DateTime? ApprovedAt { get; set; }
     }
 }

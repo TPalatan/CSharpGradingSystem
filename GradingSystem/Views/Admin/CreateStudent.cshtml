@@ -56,17 +56,20 @@
                 <label asp-for="UserAccountId" class="form-label">Assign User Account</label>
                 <select asp-for="UserAccountId" class="form-select form-select-lg" required>
                     <option value="">-- Select User Account --</option>
-                    @if (ViewBag.UserAccounts != null)
+                    @if (ViewBag.UserAccounts != null && ((List<GradingSystem.Models.UserAccount>)ViewBag.UserAccounts).Any())
                     {
                         foreach (var user in ViewBag.UserAccounts)
                         {
-                            <option value="@user.Id">@user.Username</option>
+                            <option value="@user.Id">@user.Email</option>
                         }
+                    }
+                    else
+                    {
+                        <option disabled>No approved user accounts available</option>
                     }
                 </select>
                 <span asp-validation-for="UserAccountId" class="text-danger small"></span>
             </div>
-
 
             <div class="col-12 text-center mt-4">
                 <button type="submit" class="btn btn-dark btn-lg px-5">

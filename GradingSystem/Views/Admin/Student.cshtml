@@ -39,7 +39,7 @@
                                     <td>@student.Course</td>
                                     <td>@student.YearLevel</td>
                                     <td>
-                                        @if (student.Status == "Active")
+                                        @if (!string.IsNullOrEmpty(student.Status) && student.Status == "Active")
                                         {
                                             <span class="badge bg-success">Active</span>
                                         }
@@ -48,7 +48,16 @@
                                             <span class="badge bg-secondary">Inactive</span>
                                         }
                                     </td>
-                                    <td>@student.UserAccount?.Username</td> <!-- Removed "None" -->
+                                    <td>
+                                        @if (student.UserAccount != null)
+                                        {
+                                            @student.UserAccount.Email
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Unlinked</span>
+                                        }
+                                    </td>
                                     <td>
                                         <a asp-action="EditStudent" asp-route-id="@student.Id" class="btn btn-sm btn-outline-warning me-1">
                                             <i class="bi bi-pencil-square"></i> Edit

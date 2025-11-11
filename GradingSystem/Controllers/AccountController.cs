@@ -3,6 +3,7 @@ using GradingSystem.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 
 namespace CSharpGradingSystem.Controllers
@@ -27,26 +28,31 @@ namespace CSharpGradingSystem.Controllers
 
         // 🔹 POST: Handle Login with hashed password
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public IActionResult Login(string email, string password)
         {
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Username == username);
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                ViewBag.Error = "Please enter both email and password.";
+                return View();
+            }
+
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == email);
 
             if (user == null)
             {
-                ViewBag.Error = "Wrong username or password.";
+                ViewBag.Error = "Wrong email or password.";
                 return View();
             }
 
-            // ✅ Verify hashed password
+            // Verify hashed password
             var passwordVerification = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
-
             if (passwordVerification == PasswordVerificationResult.Failed)
             {
-                ViewBag.Error = "Wrong username or password.";
+                ViewBag.Error = "Wrong email or password.";
                 return View();
             }
 
-            // 🚫 Check approval status
+            // Check approval status
             if (!user.IsApproved)
             {
                 ViewBag.Error = user.IsPending
@@ -56,25 +62,18 @@ namespace CSharpGradingSystem.Controllers
             }
 
             // ✅ Save session data
-            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetString("Email", user.Email);
             HttpContext.Session.SetString("Role", user.Role);
 
-            // ✅ Redirect based on role
-            if (user.Role == "Admin")
+            // Redirect based on role
+            TempData["SuccessMessage"] = $"Welcome back, {user.Role}!";
+
+            return user.Role switch
             {
-                TempData["SuccessMessage"] = "Welcome back, Admin!";
-                return RedirectToAction("Dashboard", "Admin");
-            }
-            else if (user.Role == "Teacher")
-            {
-                TempData["SuccessMessage"] = "Welcome back, Teacher!";
-                return RedirectToAction("Dashboard", "Teacher");
-            }
-            else
-            {
-                TempData["SuccessMessage"] = "Login successful!";
-                return RedirectToAction("Dashboard", "User");
-            }
+                "Admin" => RedirectToAction("Dashboard", "Admin"),
+                "Teacher" => RedirectToAction("Dashboard", "Teacher"),
+                _ => RedirectToAction("Dashboard", "User") // Student
+            };
         }
 
         // 🔹 GET: Register Page
@@ -88,52 +87,51 @@ namespace CSharpGradingSystem.Controllers
         [HttpPost]
         public IActionResult Create(UserAccount model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            // Check if email already exists
+            if (_context.UserAccounts.Any(u => u.Email == model.Email))
             {
-                // ✅ Hash the password before saving
-                model.Password = _passwordHasher.HashPassword(model, model.Password);
-
-                // 🟡 Mark new account as pending approval
-                model.IsApproved = false;
-                model.IsPending = true;
-
-                _context.UserAccounts.Add(model);
-                _context.SaveChanges();
-
-                TempData["SuccessMessage"] = "Your account request has been sent. Please wait for admin approval.";
-                return RedirectToAction("Login");
+                ViewBag.Error = "Email already exists. Please use another one.";
+                return View(model);
             }
 
-            return View(model);
+            // Hash password and set account status
+            model.Password = _passwordHasher.HashPassword(model, model.Password);
+            model.IsApproved = false;
+            model.IsPending = true;
+
+            _context.UserAccounts.Add(model);
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Your account request has been sent. Please wait for admin approval.";
+            return RedirectToAction("Login");
         }
 
-
-
-
-
-        // 🔹 POST: Generate and show reset code
+        // 🔹 POST: Forgot Password
         [HttpPost]
-        public IActionResult ForgotPassword(string username)
+        public IActionResult ForgotPassword(string email)
         {
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(email))
             {
-                ViewBag.Error = "Please enter your username.";
+                ViewBag.Error = "Please enter your email.";
                 return View();
             }
 
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Username == username);
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == email);
             if (user == null)
             {
-                ViewBag.Error = "Username not found.";
+                ViewBag.Error = "Email not found.";
                 return View();
             }
 
-            // Generate random reset code (for demo)
+            // Generate random reset code
             var resetCode = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
 
-            // Store in TempData for simplicity (in real app, store in DB)
+            // Store in TempData
             TempData["ResetCode"] = resetCode;
-            TempData["Username"] = username;
+            TempData["Email"] = email;
 
             ViewBag.Message = "A reset code has been generated. (In production, this would be sent securely.)";
             ViewBag.ResetCode = resetCode;
@@ -150,44 +148,36 @@ namespace CSharpGradingSystem.Controllers
 
         // 🔹 POST: Reset Password Logic
         [HttpPost]
-        public IActionResult ResetPassword(string username, string resetCode, string newPassword)
+        public IActionResult ResetPassword(string email, string resetCode, string newPassword)
         {
             var storedCode = TempData["ResetCode"]?.ToString();
-            var storedUser = TempData["Username"]?.ToString();
+            var storedEmail = TempData["Email"]?.ToString();
 
-            if (storedCode == null || storedUser == null)
+            if (storedCode == null || storedEmail == null)
             {
                 ViewBag.Error = "Session expired. Please request a new reset code.";
                 return View();
             }
 
-            if (resetCode != storedCode || username != storedUser)
+            if (resetCode != storedCode || email != storedEmail)
             {
-                ViewBag.Error = "Invalid reset code or username.";
+                ViewBag.Error = "Invalid reset code or email.";
                 return View();
             }
 
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Username == username);
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Email == email);
             if (user == null)
             {
                 ViewBag.Error = "User not found.";
                 return View();
             }
 
-            // ✅ Update hashed password
             user.Password = _passwordHasher.HashPassword(user, newPassword);
             _context.SaveChanges();
 
             TempData["SuccessMessage"] = "Your password has been successfully reset. You can now log in.";
             return RedirectToAction("Login");
         }
-
-
-
-
-
-
-
 
         // 🔹 Logout
         public IActionResult Logout()
