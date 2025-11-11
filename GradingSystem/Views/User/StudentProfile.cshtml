@@ -10,9 +10,14 @@
 <div class="student-profile-page">
     <div class="profile-header">
         <div class="profile-pic-container">
-            <img src="~/images/default-profile.jpg" alt="Profile Picture" class="profile-pic" id="profilePreview" />
-            <label for="uploadPic" class="change-photo-label">Change Photo</label>
-            <input type="file" id="uploadPic" accept="image/*" onchange="previewProfile(event)" hidden>
+            <img src="@(!string.IsNullOrEmpty(Model.ProfilePicturePath) ? Model.ProfilePicturePath : "~/images/default-profile.jpg")"
+                 alt="Profile Picture" class="profile-pic" id="profilePreview" />
+
+            <form asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data">
+                <label for="uploadPic" class="change-photo-label">Change Photo</label>
+                <input type="file" id="uploadPic" name="profilePic" accept="image/*" onchange="previewProfile(event)" hidden>
+                <button type="submit" class="btn btn-primary btn-sm mt-2">Upload</button>
+            </form>
         </div>
 
         <div class="profile-info">
@@ -63,7 +68,7 @@
         </div>
 
         <div class="form-actions">
-            <button type="button">Save Changes</button>
+            <button type="button" class="btn btn-success">Save Changes</button>
         </div>
     </div>
 </div>

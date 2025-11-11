@@ -33,5 +33,8 @@ namespace GradingSystem.Models
         public int? UserAccountId { get; set; }  // nullable
         public UserAccount? UserAccount { get; set; }
 
+        // 🔹 New property for profile picture
+        public string? ProfilePicturePath { get; set; }
+
     }
 }
