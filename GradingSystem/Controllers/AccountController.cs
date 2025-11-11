@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using Microsoft.Extensions.Configuration;
 
 namespace CSharpGradingSystem.Controllers
 {
@@ -12,21 +15,20 @@ namespace CSharpGradingSystem.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly PasswordHasher<UserAccount> _passwordHasher;
+        private readonly IConfiguration _config;
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(ApplicationDbContext context, IConfiguration config)
         {
             _context = context;
             _passwordHasher = new PasswordHasher<UserAccount>();
+            _config = config;
         }
 
         // 🔹 GET: Login Page
         [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        public IActionResult Login() => View();
 
-        // 🔹 POST: Handle Login with hashed password
+        // 🔹 POST: Login
         [HttpPost]
         public IActionResult Login(string email, string password)
         {
@@ -37,22 +39,18 @@ namespace CSharpGradingSystem.Controllers
             }
 
             var user = _context.UserAccounts.FirstOrDefault(u => u.Email == email);
-
             if (user == null)
             {
                 ViewBag.Error = "Wrong email or password.";
                 return View();
             }
 
-            // Verify hashed password
-            var passwordVerification = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
-            if (passwordVerification == PasswordVerificationResult.Failed)
+            if (_passwordHasher.VerifyHashedPassword(user, user.Password, password) == PasswordVerificationResult.Failed)
             {
                 ViewBag.Error = "Wrong email or password.";
                 return View();
             }
 
-            // Check approval status
             if (!user.IsApproved)
             {
                 ViewBag.Error = user.IsPending
@@ -61,43 +59,34 @@ namespace CSharpGradingSystem.Controllers
                 return View();
             }
 
-            // ✅ Save session data
             HttpContext.Session.SetString("Email", user.Email);
             HttpContext.Session.SetString("Role", user.Role);
-
-            // Redirect based on role
             TempData["SuccessMessage"] = $"Welcome back, {user.Role}!";
 
             return user.Role switch
             {
                 "Admin" => RedirectToAction("Dashboard", "Admin"),
                 "Teacher" => RedirectToAction("Dashboard", "Teacher"),
-                _ => RedirectToAction("Dashboard", "User") // Student
+                _ => RedirectToAction("Dashboard", "User")
             };
         }
 
         // 🔹 GET: Register Page
         [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
-        // 🔹 POST: Register new user with hashed password
+        // 🔹 POST: Register
         [HttpPost]
         public IActionResult Create(UserAccount model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
 
-            // Check if email already exists
             if (_context.UserAccounts.Any(u => u.Email == model.Email))
             {
                 ViewBag.Error = "Email already exists. Please use another one.";
                 return View(model);
             }
 
-            // Hash password and set account status
             model.Password = _passwordHasher.HashPassword(model, model.Password);
             model.IsApproved = false;
             model.IsPending = true;
@@ -109,7 +98,19 @@ namespace CSharpGradingSystem.Controllers
             return RedirectToAction("Login");
         }
 
-        // 🔹 POST: Forgot Password
+        // 🔹 Logout
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            TempData["SuccessMessage"] = "You have been logged out successfully.";
+            return RedirectToAction("Login");
+        }
+
+        // 🔹 GET: Forgot Password
+        [HttpGet]
+        public IActionResult ForgotPassword() => View();
+
+        // 🔹 POST: Forgot Password (send confirmation code)
         [HttpPost]
         public IActionResult ForgotPassword(string email)
         {
@@ -126,65 +127,114 @@ namespace CSharpGradingSystem.Controllers
                 return View();
             }
 
-            // Generate random reset code
-            var resetCode = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+            var code = new Random().Next(100000, 999999).ToString();
 
-            // Store in TempData
-            TempData["ResetCode"] = resetCode;
-            TempData["Email"] = email;
+            HttpContext.Session.SetString("ResetEmail", email);
+            HttpContext.Session.SetString("ResetCode", code);
 
-            ViewBag.Message = "A reset code has been generated. (In production, this would be sent securely.)";
-            ViewBag.ResetCode = resetCode;
-
-            return View();
+            try
+            {
+                SendEmail(email, "Password Reset Confirmation Code", $"Your confirmation code is: {code}");
+                TempData["Success"] = "Confirmation code sent to your email.";
+                return RedirectToAction("VerifyCode");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Failed to send email: " + ex.Message;
+                return View();
+            }
         }
 
-        // 🔹 GET: Reset Password Page
+        // 🔹 GET: Verify Code
+        [HttpGet]
+        public IActionResult VerifyCode() => View();
+
+        // 🔹 POST: Verify Code
+        [HttpPost]
+        public IActionResult VerifyCode(string code)
+        {
+            var sessionCode = HttpContext.Session.GetString("ResetCode");
+            var email = HttpContext.Session.GetString("ResetEmail");
+
+            if (string.IsNullOrEmpty(sessionCode) || string.IsNullOrEmpty(email))
+            {
+                TempData["Error"] = "Session expired. Please try again.";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            return code == sessionCode ? RedirectToAction("ResetPassword") : View((object)"Invalid code. Please try again.");
+        }
+
+        // 🔹 GET: Reset Password
         [HttpGet]
         public IActionResult ResetPassword()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("ResetEmail")))
+            {
+                TempData["Error"] = "Session expired. Please try again.";
+                return RedirectToAction("ForgotPassword");
+            }
+
             return View();
         }
 
-        // 🔹 POST: Reset Password Logic
+        // 🔹 POST: Reset Password
         [HttpPost]
-        public IActionResult ResetPassword(string email, string resetCode, string newPassword)
+        public IActionResult ResetPassword(string newPassword, string confirmPassword)
         {
-            var storedCode = TempData["ResetCode"]?.ToString();
-            var storedEmail = TempData["Email"]?.ToString();
-
-            if (storedCode == null || storedEmail == null)
+            var email = HttpContext.Session.GetString("ResetEmail");
+            if (string.IsNullOrEmpty(email))
             {
-                ViewBag.Error = "Session expired. Please request a new reset code.";
-                return View();
+                TempData["Error"] = "Session expired. Please try again.";
+                return RedirectToAction("ForgotPassword");
             }
 
-            if (resetCode != storedCode || email != storedEmail)
+            if (string.IsNullOrEmpty(newPassword) || newPassword != confirmPassword)
             {
-                ViewBag.Error = "Invalid reset code or email.";
+                ViewBag.Error = "Passwords do not match or are empty.";
                 return View();
             }
 
             var user = _context.UserAccounts.FirstOrDefault(u => u.Email == email);
             if (user == null)
             {
-                ViewBag.Error = "User not found.";
-                return View();
+                TempData["Error"] = "User not found.";
+                return RedirectToAction("ForgotPassword");
             }
 
             user.Password = _passwordHasher.HashPassword(user, newPassword);
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "Your password has been successfully reset. You can now log in.";
+            TempData["Success"] = "Password reset successfully. Please login.";
+            HttpContext.Session.Remove("ResetEmail");
+            HttpContext.Session.Remove("ResetCode");
+
             return RedirectToAction("Login");
         }
 
-        // 🔹 Logout
-        public IActionResult Logout()
+        // 🔹 Helper: Send Email
+        private void SendEmail(string toEmail, string subject, string body)
         {
-            HttpContext.Session.Clear();
-            TempData["SuccessMessage"] = "You have been logged out successfully.";
-            return RedirectToAction("Login");
+            var smtpHost = _config["Email:SmtpHost"];
+            var smtpPort = int.Parse(_config["Email:SmtpPort"]);
+            var smtpUser = _config["Email:SmtpUser"];
+            var smtpPass = _config["Email:SmtpPass"];
+
+            using (var message = new MailMessage())
+            {
+                message.From = new MailAddress(smtpUser);
+                message.To.Add(toEmail);
+                message.Subject = subject;
+                message.Body = body;
+                message.IsBodyHtml = false;
+
+                using (var client = new SmtpClient(smtpHost, smtpPort))
+                {
+                    client.Credentials = new NetworkCredential(smtpUser, smtpPass);
+                    client.EnableSsl = true;
+                    client.Send(message);
+                }
+            }
         }
     }
 }

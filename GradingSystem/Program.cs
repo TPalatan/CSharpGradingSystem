@@ -23,7 +23,10 @@ builder.Services.AddSession(options =>
 // ✅ Add Controllers with Views
 builder.Services.AddControllersWithViews();
 
-// Optional: Cookie Authentication if needed
+// ✅ Add IConfiguration for DI (so controllers can access appsettings)
+builder.Services.AddSingleton(builder.Configuration);
+
+// Optional: Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -35,12 +38,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("TeacherOnly", policy => policy.RequireRole("Teacher"));
     options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
 });
 
 var app = builder.Build();
 
-// ✅ Middleware pipeline order
+// ✅ Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
