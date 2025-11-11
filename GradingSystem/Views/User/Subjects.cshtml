@@ -1,14 +1,14 @@
-﻿@{
+﻿@model List<GradingSystem.Models.Subject>
 
+@{
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     ViewData["Title"] = "Subjects";
-    
 }
 
 <div class="subject-page">
     <!-- Header -->
     <div class="subject-header">
-        <h2><i data-lucide="book-open"></i> Subjects</h2>
+        <h2><i data-lucide="book-open"></i> Subjects for @ViewBag.StudentName</h2>
         <p>Manage and view all your enrolled and completed subjects.</p>
     </div>
 
@@ -17,43 +17,34 @@
         <input type="text" placeholder="Search subject..." class="search-input" />
         <select class="filter-select">
             <option value="all">All</option>
-            <option value="enrolled">Enrolled</option>
-            <option value="completed">Completed</option>
-            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
         </select>
     </div>
 
     <!-- Subject List -->
     <div class="subject-list">
-        <div class="subject-card">
-            <div class="subject-info">
-                <h3>Introduction to Computing</h3>
-                <p><strong>Code:</strong> IT101</p>
-                <p><strong>Instructor:</strong> Mr. Juan Dela Cruz</p>
-                <p><strong>Units:</strong> 3</p>
-            </div>
-            <div class="subject-status enrolled">Enrolled</div>
-        </div>
-
-        <div class="subject-card">
-            <div class="subject-info">
-                <h3>Database Management System</h3>
-                <p><strong>Code:</strong> IT203</p>
-                <p><strong>Instructor:</strong> Ms. Maria Santos</p>
-                <p><strong>Units:</strong> 3</p>
-            </div>
-            <div class="subject-status completed">Completed</div>
-        </div>
-
-        <div class="subject-card">
-            <div class="subject-info">
-                <h3>Web Systems and Technologies</h3>
-                <p><strong>Code:</strong> IT304</p>
-                <p><strong>Instructor:</strong> Mr. Roberto Cruz</p>
-                <p><strong>Units:</strong> 3</p>
-            </div>
-            <div class="subject-status pending">Pending</div>
-        </div>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var subject in Model)
+            {
+                var statusClass = subject.Status?.ToLower() ?? "inactive"; // Active/Inactive
+                                                                           <div class="subject-card">
+                                                                               <div class="subject-info">
+                                                                                   <h3>@subject.SubjectName</h3>
+                                                                                   <p><strong>Code:</strong> @subject.SubjectCode</p>
+                                                                                   <p><strong>Instructor:</strong> @subject.AssignedTeacher?.FullName</p>
+                                                                                   <p><strong>Units:</strong> @subject.Units</p>
+                                                                                   <p><strong>Semester:</strong> @subject.Semester</p>
+                                                                               </div>
+                                                                               <div class="subject-status @statusClass">@subject.Status</div>
+                                                                           </div>
+            }
+        }
+        else
+        {
+            <p>No subjects found for this student.</p>
+        }
     </div>
 </div>
 

@@ -4,6 +4,7 @@ using CSharpGradingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GradingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251111144511_teacher")]
+    partial class teacher
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,44 +24,6 @@ namespace GradingSystem.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("GradingSystem.Models.Grade", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double?>("Final")
-                        .HasColumnType("double");
-
-                    b.Property<double?>("FinalGrade")
-                        .HasColumnType("double");
-
-                    b.Property<double?>("Midterm")
-                        .HasColumnType("double");
-
-                    b.Property<double?>("Prelim")
-                        .HasColumnType("double");
-
-                    b.Property<double?>("SemiFinal")
-                        .HasColumnType("double");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("Grades");
-                });
 
             modelBuilder.Entity("GradingSystem.Models.Student", b =>
                 {
@@ -261,25 +226,6 @@ namespace GradingSystem.Migrations
                     b.ToTable("UserAccounts");
                 });
 
-            modelBuilder.Entity("GradingSystem.Models.Grade", b =>
-                {
-                    b.HasOne("GradingSystem.Models.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GradingSystem.Models.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-
-                    b.Navigation("Subject");
-                });
-
             modelBuilder.Entity("GradingSystem.Models.Student", b =>
                 {
                     b.HasOne("GradingSystem.Models.UserAccount", "UserAccount")
@@ -311,7 +257,7 @@ namespace GradingSystem.Migrations
             modelBuilder.Entity("GradingSystem.Models.Subject", b =>
                 {
                     b.HasOne("GradingSystem.Models.Teacher", "AssignedTeacher")
-                        .WithMany("Subjects")
+                        .WithMany()
                         .HasForeignKey("AssignedTeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -326,11 +272,6 @@ namespace GradingSystem.Migrations
                         .HasForeignKey("UserAccountId");
 
                     b.Navigation("UserAccount");
-                });
-
-            modelBuilder.Entity("GradingSystem.Models.Teacher", b =>
-                {
-                    b.Navigation("Subjects");
                 });
 #pragma warning restore 612, 618
         }

@@ -36,8 +36,9 @@
             <a asp-controller="Teacher" asp-action="Grades">
                 <i data-lucide="clipboard-list"></i><span>Grades</span>
             </a>
-            <a asp-controller="Teacher" asp-action="Reports">
-                <i data-lucide="file-text"></i><span>Reports</span>
+            <a asp-controller="Teacher" asp-action="TeacherProfile">
+                <i data-lucide="user-check"></i><span>Profile</span>
+
             </a>
             <a asp-controller="Account" asp-action="Logout" class="logout">
                 <i data-lucide="log-out"></i><span>Logout</span>
@@ -85,22 +86,34 @@
 </body>
 
 <style>
+    /* SIDEBAR */
     .sidebar {
         position: fixed;
         left: 0;
         top: 0;
         bottom: 0;
         width: 240px;
-        background: #002b5b;
-        color: #fff;
+        background: #ffffff; /* white background */
+        color: #002b5b; /* dark blue text */
         display: flex;
         flex-direction: column;
         padding-top: 20px;
+        border-right: 1px solid #dee2e6;
     }
 
-    .sidebar-logo img {
-        width: 80px;
-        margin-bottom: 10px;
+    .sidebar-logo {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .sidebar-logo img {
+            width: 80px;
+            margin-bottom: 10px;
+        }
+
+    .sidebar h4 {
+        color: #002b5b;
+        font-weight: 600;
     }
 
     .sidebar-links {
@@ -114,16 +127,19 @@
         align-items: center;
         gap: 12px;
         padding: 10px 20px;
-        color: #ddd;
+        color: #002b5b; /* dark text */
         text-decoration: none;
         transition: 0.3s;
+        border-radius: 5px;
     }
 
-        .sidebar a:hover, .sidebar a.active {
-            background: #004080;
-            color: #fff;
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #e9ecef; /* light grey on hover/active */
+            color: #002b5b;
         }
 
+    /* TOP NAVBAR */
     .top-navbar {
         position: fixed;
         left: 240px;
@@ -134,10 +150,13 @@
         color: #fff;
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
         z-index: 1000;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
+    /* MAIN CONTENT */
     .main-content {
         margin-left: 240px;
         margin-top: 60px;
@@ -147,5 +166,27 @@
         flex-direction: column;
         justify-content: space-between;
     }
+
+    /* FOOTER */
+    .footer-content {
+        background: #f1f3f6;
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+    }
+
+        .footer-content p {
+            margin: 0;
+            color: #555;
+        }
+
+    .social-icons a {
+        margin-left: 10px;
+        color: #002b5b;
+        transition: 0.3s;
+    }
+
+        .social-icons a:hover {
+            color: #004080;
+        }
 </style>
 </html>

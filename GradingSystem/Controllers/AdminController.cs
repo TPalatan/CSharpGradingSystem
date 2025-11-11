@@ -1,6 +1,8 @@
 ﻿using CSharpGradingSystem.Data;
 using GradingSystem.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -226,14 +228,29 @@ namespace CSharpGradingSystem.Controllers
         // ==========================
         // 🔹 TEACHER MANAGEMENT
         // ==========================
+
+
+        // GET: List all teachers
+
+        // GET: List of teachers
         public IActionResult Teachers()
         {
             var teachers = _context.Teachers.ToList();
             return View(teachers);
         }
 
+
         [HttpGet]
-        public IActionResult CreateTeacher() => View();
+        public IActionResult CreateTeacher()
+        {
+            // Only approved user accounts for email selection
+            ViewBag.UserAccounts = _context.UserAccounts
+                                           .Where(u => u.IsApproved && u.Role == "Teacher")
+                                           .OrderBy(u => u.Email)
+                                           .ToList();
+
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -241,15 +258,44 @@ namespace CSharpGradingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Map selected Email to UserAccountId
+                if (!string.IsNullOrEmpty(model.Email))
+                {
+                    var user = _context.UserAccounts
+                                       .FirstOrDefault(u => u.Email == model.Email && u.Role == "Teacher");
+                    if (user != null)
+                    {
+                        model.UserAccountId = user.Id;
+                        model.Email = user.Email; // optional, just to ensure consistency
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Selected email does not exist.";
+                        ViewBag.UserAccounts = _context.UserAccounts
+                                                       .Where(u => u.IsApproved && u.Role == "Teacher")
+                                                       .OrderBy(u => u.Email)
+                                                       .ToList();
+                        return View(model);
+                    }
+                }
+
                 _context.Teachers.Add(model);
                 _context.SaveChanges();
                 TempData["SuccessMessage"] = "Teacher added successfully!";
                 return RedirectToAction(nameof(Teachers));
             }
 
+            // Reload dropdown if validation fails
+            ViewBag.UserAccounts = _context.UserAccounts
+                                           .Where(u => u.IsApproved && u.Role == "Teacher")
+                                           .OrderBy(u => u.Email)
+                                           .ToList();
+
             TempData["ErrorMessage"] = "Please correct the errors and try again.";
             return View(model);
         }
+
+
 
         [HttpGet]
         public IActionResult EditTeacher(int id)

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,38 +22,71 @@ namespace CSharpGradingSystem.Controllers
             _env = env;
         }
 
+        // 🏠 Dashboard
         public IActionResult Dashboard()
         {
-            // Get logged-in user email
             var email = HttpContext.Session.GetString("Email");
-
             if (string.IsNullOrEmpty(email))
                 return RedirectToAction("Login", "Account");
 
-            // Retrieve student info
             var student = _context.Students
                 .Include(s => s.UserAccount)
                 .FirstOrDefault(s => s.UserAccount != null && s.UserAccount.Email == email);
 
+            if (student == null)
+                return RedirectToAction("StudentProfile");
+
             return View(student);
         }
 
-        public IActionResult Grades()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
+        // 📚 Subjects
         public IActionResult Subjects()
         {
-            return View();
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Login", "Account");
+
+            var student = _context.Students
+                .Include(s => s.UserAccount)
+                .FirstOrDefault(s => s.UserAccount.Email == email);
+
+            if (student == null)
+                return RedirectToAction("Dashboard", "User");
+
+            var subjects = _context.StudentSubjectAssignments
+                .Where(ssa => ssa.StudentId == student.Id)
+                .Include(ssa => ssa.Subject)
+                .ThenInclude(s => s.AssignedTeacher)
+                .Select(ssa => ssa.Subject)
+                .ToList();
+
+            ViewBag.StudentName = student.FullName;
+            return View(subjects);
         }
 
-        // GET: Student Profile
+        // 🧮 Grades Page
+        public async Task<IActionResult> Grades()
+        {
+            var email = HttpContext.Session.GetString("Email");
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Login", "Account");
+
+            var student = await _context.Students
+                .Include(s => s.UserAccount)
+                .FirstOrDefaultAsync(s => s.UserAccount != null && s.UserAccount.Email == email);
+
+            if (student == null)
+                return NotFound("Student not found.");
+
+            var grades = await _context.Grades
+                .Include(g => g.Subject)
+                .Where(g => g.StudentId == student.Id)
+                .ToListAsync();
+
+            return View(grades);
+        }
+
+        // 👤 Student Profile
         public IActionResult StudentProfile()
         {
             var email = HttpContext.Session.GetString("Email");
@@ -73,7 +107,7 @@ namespace CSharpGradingSystem.Controllers
             return View(student);
         }
 
-        // POST: Upload profile photo
+        // 📸 Upload Profile Photo
         [HttpPost]
         public async Task<IActionResult> UploadProfilePhoto(IFormFile profilePic)
         {
@@ -91,7 +125,6 @@ namespace CSharpGradingSystem.Controllers
                 return RedirectToAction("Dashboard");
             }
 
-            // Save the uploaded file
             var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/profile");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
@@ -104,12 +137,16 @@ namespace CSharpGradingSystem.Controllers
                 await profilePic.CopyToAsync(fileStream);
             }
 
-            // Save relative path to database
             student.ProfilePicturePath = "/uploads/profile/" + uniqueFileName;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Profile photo updated successfully.";
             return RedirectToAction("StudentProfile");
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
         }
     }
 }

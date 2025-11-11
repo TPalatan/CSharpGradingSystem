@@ -1,10 +1,9 @@
-﻿@{
+﻿@model IEnumerable<GradingSystem.Models.Grade>
 
+@{
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     ViewData["Title"] = "My Grades";
 }
-<link rel="stylesheet" href="~/css/grades.css" />
-
 
 <div class="grades-page">
     <div class="grades-header">
@@ -12,77 +11,113 @@
         <p>Here’s your performance for this semester.</p>
     </div>
 
-    <div class="grades-summary">
-        <div class="summary-card">
-            <h5>GPA</h5>
-            <h2>1.75</h2>
-        </div>
-        <div class="summary-card">
-            <h5>Total Subjects</h5>
-            <h2>6</h2>
-        </div>
-        <div class="summary-card">
-            <h5>Status</h5>
-            <h2>Enrolled</h2>
-        </div>
-    </div>
+    @if (Model != null && Model.Any())
+    {
+        <div class="card grades-table-card mt-4 shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i data-lucide="list"></i> Subject Grades</h5>
+                <span class="fw-light" style="font-size: 14px;">Current Semester</span>
+            </div>
 
-    <div class="card grades-table-card mt-4">
-        <div class="card-header">
-            <h5><i data-lucide="list"></i> Subject Grades</h5>
+            <div class="card-body p-0">
+                <table class="table table-hover grades-table mb-0">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>Subject Code</th>
+                            <th>Subject Name</th>
+                            <th>Prelim</th>
+                            <th>Midterm</th>
+                            <th>Semi-Final</th>
+                            <th>Final</th>
+                            <th>Final Grade</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var grade in Model)
+                        {
+                            double? finalGrade = grade.FinalGrade;
+                            string status = finalGrade.HasValue
+                            ? (finalGrade.Value >= 75 ? "Passed" : "Failed")
+                            : "In Progress";
+
+                            <tr class="text-center">
+                                <td>@grade.Subject?.SubjectCode</td>
+                                <td>@grade.Subject?.SubjectName</td>
+                                <td>@(grade.Prelim?.ToString("0.##") ?? "-")</td>
+                                <td>@(grade.Midterm?.ToString("0.##") ?? "-")</td>
+                                <td>@(grade.SemiFinal?.ToString("0.##") ?? "-")</td>
+                                <td>@(grade.Final?.ToString("0.##") ?? "-")</td>
+                                <td><strong>@(grade.FinalGrade?.ToString("0.##") ?? "-")</strong></td>
+                                <td>
+                                    <span class="status @(status.ToLower())">@status</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="card-body">
-            <table class="table grades-table">
-                <thead>
-                    <tr>
-                        <th>Subject Code</th>
-                        <th>Subject Name</th>
-                        <th>Instructor</th>
-                        <th>Midterm</th>
-                        <th>Final</th>
-                        <th>Average</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>IT101</td>
-                        <td>Introduction to Computing</td>
-                        <td>Prof. Santos</td>
-                        <td>1.75</td>
-                        <td>1.50</td>
-                        <td>1.63</td>
-                        <td><span class="status passed">Passed</span></td>
-                    </tr>
-                    <tr>
-                        <td>IT102</td>
-                        <td>Computer Programming 1</td>
-                        <td>Prof. Reyes</td>
-                        <td>2.00</td>
-                        <td>1.75</td>
-                        <td>1.88</td>
-                        <td><span class="status passed">Passed</span></td>
-                    </tr>
-                    <tr>
-                        <td>IT103</td>
-                        <td>Mathematics in Computing</td>
-                        <td>Prof. Cruz</td>
-                        <td>2.50</td>
-                        <td>2.75</td>
-                        <td>2.63</td>
-                        <td><span class="status failed">Failed</span></td>
-                    </tr>
-                    <tr>
-                        <td>IT104</td>
-                        <td>Data Structures</td>
-                        <td>Prof. Dela Cruz</td>
-                        <td>1.50</td>
-                        <td>1.25</td>
-                        <td>1.38</td>
-                        <td><span class="status passed">Passed</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    }
+    else
+    {
+        <p class="text-center text-muted mt-5">No grades available yet.</p>
+    }
 </div>
+
+<style>
+    .grades-page {
+        max-width: 1000px;
+        margin: 40px auto;
+        font-family: 'Segoe UI', sans-serif;
+        color: #333;
+    }
+
+    .grades-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+        .grades-header h2 {
+            color: #007bff;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .grades-header p {
+            color: #6c757d;
+            font-size: 15px;
+        }
+
+    .grades-table th {
+        background-color: #007bff !important;
+        color: white;
+        font-weight: 600;
+    }
+
+    .grades-table td {
+        vertical-align: middle;
+    }
+
+    .status {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+        .status.passed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status.failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.inprogress {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+</style>

@@ -17,6 +17,7 @@ namespace CSharpGradingSystem.Data
         public DbSet<Subject> Subjects { get; set; } = null!;
         public DbSet<StudentSubjectAssignment> StudentSubjectAssignments { get; set; } = null!;
 
+        public DbSet<Grade> Grades { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

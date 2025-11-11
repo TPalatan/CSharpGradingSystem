@@ -1,61 +1,108 @@
 ﻿@model GradingSystem.Models.Teacher
+
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Add New Teacher";
 }
 
-<div class="container py-4">
-    <h2 class="fw-bold mb-4 text-dark">Add New Teacher 👩‍🏫</h2>
-
-    <form asp-action="CreateTeacher" method="post" class="row g-3">
-        <div class="col-md-6">
-            <label asp-for="FullName" class="form-label fw-semibold"></label>
-            <input asp-for="FullName" class="form-control" placeholder="Enter full name" />
-            <span asp-validation-for="FullName" class="text-danger small"></span>
+<section class="add-teacher py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-dark">Add New Teacher 👩‍🏫</h1>
+            <p class="text-secondary fs-6">Fill out the form below to register a new teacher.</p>
         </div>
 
-        <div class="col-md-6">
-            <label asp-for="Department" class="form-label fw-semibold"></label>
-            <input asp-for="Department" class="form-control" placeholder="Enter department" />
-            <span asp-validation-for="Department" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="Email" class="form-label fw-semibold"></label>
-            <input asp-for="Email" class="form-control" placeholder="Enter email address" />
-            <span asp-validation-for="Email" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="ContactNumber" class="form-label fw-semibold"></label>
-            <input asp-for="ContactNumber" class="form-control" placeholder="Enter contact number" />
-            <span asp-validation-for="ContactNumber" class="text-danger small"></span>
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="Status" class="form-label fw-semibold"></label>
-            <select asp-for="Status" class="form-select">
-                <option>Active</option>
-                <option>Inactive</option>
-            </select>
-        </div>
-
-        <div class="col-12 mt-3">
-            <button type="submit" class="btn btn-dark px-4">
-                <i class="bi bi-person-plus-fill me-2"></i> Add Teacher
-            </button>
-            <a asp-action="Teachers" class="btn btn-outline-secondary ms-2">Cancel</a>
-        </div>
-
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-success mt-3">
-                @TempData["SuccessMessage"]
+        <form asp-action="CreateTeacher" method="post" class="row g-4 needs-validation" novalidate>
+            <!-- Full Name -->
+            <div class="col-md-6">
+                <label asp-for="FullName" class="form-label">Full Name</label>
+                <input asp-for="FullName" class="form-control form-control-lg" placeholder="Enter full name" required />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
             </div>
-        }
-    </form>
-</div>
+
+            <!-- Department -->
+            <div class="col-md-6">
+                <label asp-for="Department" class="form-label">Department</label>
+                <input asp-for="Department" class="form-control form-control-lg" placeholder="Enter department" required />
+                <span asp-validation-for="Department" class="text-danger small"></span>
+            </div>
+
+            <!-- Email from UserAccounts -->
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label">Email</label>
+                <select asp-for="Email" class="form-select form-select-lg" required>
+                    <option value="">-- Select Email --</option>
+                    @if (ViewBag.UserAccounts != null && ((List<GradingSystem.Models.UserAccount>)ViewBag.UserAccounts).Any())
+                    {
+                        foreach (var user in ViewBag.UserAccounts)
+                        {
+                            <option value="@user.Email">@user.Email</option>
+                        }
+                    }
+                    else
+                    {
+                        <option disabled>No approved user accounts available</option>
+                    }
+                </select>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <!-- Contact Number -->
+            <div class="col-md-6">
+                <label asp-for="ContactNumber" class="form-label">Contact Number</label>
+                <input asp-for="ContactNumber" class="form-control form-control-lg" placeholder="Enter contact number" required />
+                <span asp-validation-for="ContactNumber" class="text-danger small"></span>
+            </div>
+
+            <!-- Status -->
+            <div class="col-md-4">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select form-select-lg">
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-12 mt-4 text-center">
+                <button type="submit" class="btn btn-dark btn-lg px-5">
+                    <i class="bi bi-person-plus-fill me-2"></i> Add Teacher
+                </button>
+                <a asp-action="Teachers" class="btn btn-outline-secondary btn-lg ms-2">Cancel</a>
+            </div>
+
+            <!-- Success / Error Messages -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success mt-4 text-center col-12">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger mt-4 text-center col-12">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+        </form>
+    </div>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
 }
