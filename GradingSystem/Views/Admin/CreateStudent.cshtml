@@ -27,7 +27,13 @@
 
             <div class="col-md-6">
                 <label asp-for="Course" class="form-label">Course</label>
-                <input asp-for="Course" class="form-control form-control-lg" placeholder="Enter course" required />
+                <select asp-for="Course" class="form-select form-select-lg" required>
+                    <option value="">-- Select Course --</option>
+                    <option>Bachelor of Science in Information Technology</option>
+                    <option>Bachelor of Science in Business Administration</option>
+                    <option>Bachelor of Secondary Education</option>
+                    <option>Bachelor of Science in Criminology</option>
+                </select>
                 <span asp-validation-for="Course" class="text-danger small"></span>
             </div>
 
@@ -60,7 +66,14 @@
                     {
                         foreach (var user in ViewBag.UserAccounts)
                         {
-                            <option value="@user.Id">@user.Email</option>
+                            if (user.Id == Model.UserAccountId)
+                            {
+                                <option value="@user.Id" selected>@user.Email</option>
+                            }
+                            else
+                            {
+                                <option value="@user.Id">@user.Email</option>
+                            }
                         }
                     }
                     else
@@ -70,6 +83,8 @@
                 </select>
                 <span asp-validation-for="UserAccountId" class="text-danger small"></span>
             </div>
+
+
 
             <div class="col-12 text-center mt-4">
                 <button type="submit" class="btn btn-dark btn-lg px-5">
@@ -87,6 +102,13 @@
             {
                 <div class="alert alert-success mt-4 text-center col-12">
                     @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger mt-4 text-center col-12">
+                    @TempData["ErrorMessage"]
                 </div>
             }
         </form>

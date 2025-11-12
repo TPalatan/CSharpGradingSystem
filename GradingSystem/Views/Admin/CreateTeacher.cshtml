@@ -23,9 +23,17 @@
             <!-- Department -->
             <div class="col-md-6">
                 <label asp-for="Department" class="form-label">Department</label>
-                <input asp-for="Department" class="form-control form-control-lg" placeholder="Enter department" required />
+                <select asp-for="Department" class="form-select form-select-lg" required>
+                    <option value="">-- Select Department --</option>
+                    <option>Department of Information Technology</option>
+                    <option>Department of Business Administration</option>
+                    <option>Department of Education</option>
+                    <option>Department of Criminology</option>
+                
+                </select>
                 <span asp-validation-for="Department" class="text-danger small"></span>
             </div>
+
 
             <!-- Email from UserAccounts -->
             <div class="col-md-6">
@@ -36,7 +44,14 @@
                     {
                         foreach (var user in ViewBag.UserAccounts)
                         {
-                            <option value="@user.Email">@user.Email</option>
+                            if (Model != null && Model.Email == user.Email)
+                            {
+                                <option value="@user.Email" selected>@user.Email</option>
+                            }
+                            else
+                            {
+                                <option value="@user.Email">@user.Email</option>
+                            }
                         }
                     }
                     else
@@ -46,6 +61,7 @@
                 </select>
                 <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
+
 
             <!-- Contact Number -->
             <div class="col-md-6">

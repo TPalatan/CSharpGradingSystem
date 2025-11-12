@@ -30,7 +30,7 @@
                             <th>Semi-Final</th>
                             <th>Final</th>
                             <th>Final Grade</th>
-                            <th>Status</th>
+                         
                         </tr>
                     </thead>
                     <tbody>
@@ -49,9 +49,7 @@
                                 <td>@(grade.SemiFinal?.ToString("0.##") ?? "-")</td>
                                 <td>@(grade.Final?.ToString("0.##") ?? "-")</td>
                                 <td><strong>@(grade.FinalGrade?.ToString("0.##") ?? "-")</strong></td>
-                                <td>
-                                    <span class="status @(status.ToLower())">@status</span>
-                                </td>
+                                
                             </tr>
                         }
                     </tbody>

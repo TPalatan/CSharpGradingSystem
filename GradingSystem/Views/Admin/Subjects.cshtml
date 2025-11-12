@@ -3,6 +3,11 @@
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Subjects";
+
+    // Group subjects by Department
+    var groupedSubjects = Model?
+        .GroupBy(s => s.Department)
+        .ToDictionary(g => g.Key, g => g.ToList());
 }
 
 <div class="container-fluid">
@@ -15,65 +20,68 @@
         </a>
     </div>
 
-    <!-- SUBJECT TABLE -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body table-responsive">
-            <table class="table table-hover align-middle text-nowrap">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Subject Code</th>
-                        <th>Subject Name</th>
-                        <th>Department</th>
-                        <th>Assigned Teacher</th>
-                        <th>Units</th>
-                        <th>Semester</th>
-                        <th>Status</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        int index = 1;
-                        foreach (var subject in Model)
-                        {
-                            <tr>
-                                <td>@index</td>
-                                <td>@subject.SubjectCode</td>
-                                <td>@subject.SubjectName</td>
-                                <td>@subject.Department</td>
-                                <td>@subject.AssignedTeacher?.FullName</td>
-                                <td>@subject.Units</td>
-                                <td>@subject.Semester</td>
-                                <td>
-                                    <span class="badge @(subject.Status == "Active" ? "bg-success" : "bg-secondary")">
-                                        @subject.Status
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <a class="btn btn-sm btn-outline-warning" title="Edit" href="@Url.Action("EditSubject", "Admin", new { id = subject.Id })">
-                                        <i data-lucide="edit"></i>
-                                    </a>
-                                    <a class="btn btn-sm btn-outline-danger" title="Delete" href="@Url.Action("DeleteSubject", "Admin", new { id = subject.Id })" onclick="return confirm('Are you sure you want to delete this subject?');">
-                                        <i data-lucide="trash-2"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            index++;
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="9" class="text-center">No subjects available.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+    @if (groupedSubjects != null && groupedSubjects.Any())
+    {
+        @foreach (var deptGroup in groupedSubjects)
+        {
+            <h4 class="text-secondary mt-4">@deptGroup.Key</h4>
 
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover align-middle text-nowrap mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>Department</th>
+                                <th>Assigned Teacher</th>
+                                <th>Units</th>
+                                <th>Semester</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int index = 1;
+                                foreach (var subject in deptGroup.Value)
+                                {
+                                    <tr>
+                                        <td>@index</td>
+                                        <td>@subject.SubjectCode</td>
+                                        <td>@subject.SubjectName</td>
+                                        <td>@subject.Department</td>
+                                        <td>@subject.AssignedTeacher?.FullName</td>
+                                        <td>@subject.Units</td>
+                                        <td>@subject.Semester</td>
+                                        <td>
+                                            <span class="badge @(subject.Status == "Active" ? "bg-success" : "bg-secondary")">
+                                                @subject.Status
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="btn btn-sm btn-outline-warning" title="Edit" href="@Url.Action("EditSubject", "Admin", new { id = subject.Id })">
+                                                <i data-lucide="edit"></i>
+                                            </a>
+                                            <a class="btn btn-sm btn-outline-danger" title="Delete" href="@Url.Action("DeleteSubject", "Admin", new { id = subject.Id })" onclick="return confirm('Are you sure you want to delete this subject?');">
+                                                <i data-lucide="trash-2"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center py-3 text-muted">No subjects available.</div>
+    }
 </div>
 
 @section Scripts {
@@ -83,7 +91,7 @@
 }
 
 <style>
-    h2.fw-bold {
+    h2.fw-bold, h4.text-secondary {
         letter-spacing: 0.5px;
     }
 
@@ -103,5 +111,13 @@
 
     .badge {
         font-size: 0.8rem;
+    }
+
+    table th, table td {
+        white-space: nowrap;
+    }
+
+    .card-body {
+        overflow-x: auto;
     }
 </style>

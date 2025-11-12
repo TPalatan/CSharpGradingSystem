@@ -1,0 +1,110 @@
+﻿@model IEnumerable<GradingSystem.Models.StudentGradeViewModel>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Student Grades";
+}
+
+<div class="container-fluid py-4">
+    <h2 class="mb-4 text-primary fw-bold">Student Grades</h2>
+
+    @foreach (var courseGroup in Model.GroupBy(s => s.Course))
+    {
+        <div class="course-section mb-5">
+            <h3 class="course-title mb-3">@courseGroup.Key</h3>
+
+            @foreach (var yearGroup in courseGroup.GroupBy(s => s.YearLevel))
+            {
+                <div class="year-section mb-4">
+                    <h5 class="year-title mb-2">@yearGroup.Key</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Subject</th>
+                                    <th>Teacher</th>
+                                    <th>Prelim</th>
+                                    <th>Midterm</th>
+                                    <th>Semi-Final</th>
+                                    <th>Final</th>
+                                    <th>Final Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var student in yearGroup)
+                                {
+                                    var firstRow = true;
+                                    foreach (var g in student.Grades)
+                                    {
+                                        <tr>
+                                            @if (firstRow)
+                                            {
+                                                <td rowspan="@student.Grades.Count">@student.StudentName</td>
+                                                firstRow = false;
+                                            }
+                                            <td>@g.SubjectName</td>
+                                            <td>@g.TeacherName</td>
+                                            <td>@g.Prelim?.ToString("0.##")</td>
+                                            <td>@g.Midterm?.ToString("0.##")</td>
+                                            <td>@g.SemiFinal?.ToString("0.##")</td>
+                                            <td>@g.Final?.ToString("0.##")</td>
+                                            <td>@g.FinalGrade?.ToString("0.##")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        h2, h3, h5 {
+            color: #007bff;
+        }
+
+        .course-title {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f0f6ff;
+        }
+
+        .table th {
+            font-weight: 600;
+            background-color: #e9f2ff;
+        }
+
+        .table td {
+            color: #333;
+        }
+
+        .table-responsive {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .course-section, .year-section {
+            margin-top: 20px;
+        }
+
+        .year-title {
+            color: #0056b3;
+            font-weight: 600;
+        }
+    </style>
+}

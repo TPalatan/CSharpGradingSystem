@@ -3,6 +3,11 @@
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Student Records";
+
+    // Group students by Course and then by YearLevel
+    var groupedStudents = Model?
+        .GroupBy(s => s.Course)
+        .ToDictionary(g => g.Key, g => g.GroupBy(s => s.YearLevel).ToDictionary(y => y.Key, y => y.ToList()));
 }
 
 <section class="student-records py-4">
@@ -14,79 +19,97 @@
             </a>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-body p-0">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Full Name</th>
-                            <th>Course</th>
-                            <th>Year Level</th>
-                            <th>Status</th>
-                            <th>User Account</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            foreach (var student in Model)
-                            {
-                                <tr>
-                                    <td>@student.StudentID</td>
-                                    <td>@student.FullName</td>
-                                    <td>@student.Course</td>
-                                    <td>@student.YearLevel</td>
-                                    <td>
-                                        @if (!string.IsNullOrEmpty(student.Status) && student.Status == "Active")
+        @if (groupedStudents != null && groupedStudents.Any())
+        {
+            @foreach (var courseGroup in groupedStudents)
+            {
+                <h4 class="text-secondary mt-4">@courseGroup.Key</h4>
+
+                @foreach (var yearGroup in courseGroup.Value)
+                {
+                    <h5 class="text-muted mt-2">@yearGroup.Key</h5>
+
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Full Name</th>
+                                            <th>Course</th>
+                                            <th>Year Level</th>
+                                            <th>Status</th>
+                                            <th>User Account</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var student in yearGroup.Value)
                                         {
-                                            <span class="badge bg-success">Active</span>
+                                            <tr>
+                                                <td>@student.StudentID</td>
+                                                <td>@student.FullName</td>
+                                                <td>@student.Course</td>
+                                                <td>@student.YearLevel</td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(student.Status) && student.Status == "Active")
+                                                    {
+                                                        <span class="badge bg-success">Active</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">Inactive</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (student.UserAccount != null)
+                                                    {
+                                                        @student.UserAccount.Email
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">Unlinked</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <a asp-action="EditStudent" asp-route-id="@student.Id" class="btn btn-sm btn-outline-warning me-1">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <a asp-action="DeleteStudent" asp-route-id="@student.Id"
+                                                       onclick="return confirm('Are you sure you want to delete this student?');"
+                                                       class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">Inactive</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if (student.UserAccount != null)
-                                        {
-                                            @student.UserAccount.Email
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">Unlinked</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <a asp-action="EditStudent" asp-route-id="@student.Id" class="btn btn-sm btn-outline-warning me-1">
-                                            <i class="bi bi-pencil-square"></i> Edit
-                                        </a>
-                                        <a asp-action="DeleteStudent" asp-route-id="@student.Id"
-                                           onclick="return confirm('Are you sure you want to delete this student?');"
-                                           class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i> Delete
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-4">No students found.</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+        else
+        {
+            <div class="text-center text-muted py-4">No students found.</div>
+        }
     </div>
 </section>
 
 @section Styles {
     <style>
         .student-records h2 {
+            letter-spacing: 0.5px;
+        }
+
+        .student-records h4 {
+            letter-spacing: 0.5px;
+        }
+
+        .student-records h5 {
             letter-spacing: 0.5px;
         }
 
@@ -122,6 +145,14 @@
             background-color: #f8f9fa;
             color: #999;
             text-align: center;
+        }
+
+        table th, table td {
+            white-space: nowrap;
+        }
+
+        .card-body {
+            overflow-x: auto;
         }
     </style>
 }

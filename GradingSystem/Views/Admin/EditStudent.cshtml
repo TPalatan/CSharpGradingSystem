@@ -1,0 +1,115 @@
+﻿@model GradingSystem.Models.Student
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Student";
+}
+
+<section class="edit-student py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-dark">Edit Student 🧑‍🎓</h1>
+            <p class="text-secondary fs-6">Update student information below.</p>
+        </div>
+
+        <form asp-action="EditStudent" method="post" enctype="multipart/form-data" class="row g-4 needs-validation" novalidate>
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Student ID -->
+            <div class="col-md-6">
+                <label asp-for="StudentID" class="form-label">Student ID</label>
+                <input asp-for="StudentID" class="form-control form-control-lg" readonly />
+                <span asp-validation-for="StudentID" class="text-danger small"></span>
+            </div>
+
+            <!-- Full Name -->
+            <div class="col-md-6">
+                <label asp-for="FullName" class="form-label">Full Name</label>
+                <input asp-for="FullName" class="form-control form-control-lg" required />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+
+            <!-- Course -->
+            <div class="col-md-6">
+                <label asp-for="Course" class="form-label">Course</label>
+                <select asp-for="Course" class="form-select form-select-lg" asp-items="ViewBag.Courses" required>
+                    <option value="">-- Select Course --</option>
+                </select>
+                <span asp-validation-for="Course" class="text-danger small"></span>
+            </div>
+
+            <!-- Year Level -->
+            <div class="col-md-3">
+                <label asp-for="YearLevel" class="form-label">Year Level</label>
+                <select asp-for="YearLevel" class="form-select form-select-lg" asp-items="ViewBag.YearLevels" required>
+                    <option value="">-- Select Year Level --</option>
+                </select>
+                <span asp-validation-for="YearLevel" class="text-danger small"></span>
+            </div>
+
+            <!-- Status -->
+            <div class="col-md-3">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-select form-select-lg" asp-items="ViewBag.StatusList"></select>
+            </div>
+
+            <!-- User Account -->
+            <div class="col-md-6">
+                <label asp-for="UserAccountId" class="form-label">User Account</label>
+                <select asp-for="UserAccountId" class="form-select form-select-lg" asp-items="ViewBag.UserAccounts">
+                    <option value="">-- Select User Account --</option>
+                </select>
+                <span asp-validation-for="UserAccountId" class="text-danger small"></span>
+            </div>
+
+            <!-- Profile Picture -->
+            <div class="col-md-6">
+                <label class="form-label">Profile Picture</label>
+                <div class="d-flex align-items-center gap-3">
+                    <img src="@(string.IsNullOrEmpty(Model.ProfilePicturePath) ? "~/images/default-avatar.png" : Model.ProfilePicturePath)" class="img-thumbnail" style="width:100px;height:100px;" />
+                    <input type="file" asp-for="ProfilePicturePath" class="form-control form-control-lg" />
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-12 mt-4 text-center">
+                <button type="submit" class="btn btn-dark btn-lg px-5">
+                    <i class="bi bi-save me-2"></i> Save Changes
+                </button>
+                <a asp-action="Student" class="btn btn-outline-secondary btn-lg ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+}
+
+@section Styles {
+    <style>
+        .img-thumbnail {
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+    </style>
+}

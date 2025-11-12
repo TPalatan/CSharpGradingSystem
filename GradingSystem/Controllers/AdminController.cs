@@ -23,12 +23,55 @@ namespace CSharpGradingSystem.Controllers
         // ==========================
         public IActionResult Dashboard()
         {
-            var pendingUsers = _context.UserAccounts
-                .Where(u => u.IsPending)
-                .ToList();
+            var totalStudents = _context.Students.Count();
+            var totalTeachers = _context.Teachers.Count();
+            var totalSubjects = _context.Subjects.Count();
+            var totalCourses = _context.Students.Select(s => s.Course).Distinct().Count();
 
-            ViewBag.PendingCount = pendingUsers.Count;
-            return View(pendingUsers);
+            // Example: Recent activities (latest 5 student/teacher/subject additions)
+            var recentActivities = _context.Students
+                .OrderByDescending(s => s.Id)
+                .Take(3)
+                .Select(s => new RecentActivity
+                {
+                    Date = DateTime.Now,
+                    Description = $"Student added: {s.FullName}",
+                    PerformedBy = "Admin"
+                }).ToList();
+
+            recentActivities.AddRange(_context.Teachers
+                .OrderByDescending(t => t.Id)
+                .Take(3)
+                .Select(t => new RecentActivity
+                {
+                    Date = DateTime.Now,
+                    Description = $"Teacher added: {t.FullName}",
+                    PerformedBy = "Admin"
+                }));
+
+            recentActivities.AddRange(_context.Subjects
+                .OrderByDescending(su => su.Id)
+                .Take(3)
+                .Select(su => new RecentActivity
+                {
+                    Date = DateTime.Now,
+                    Description = $"Subject added: {su.SubjectName}",
+                    PerformedBy = "Admin"
+                }));
+
+            // Order by most recent
+            recentActivities = recentActivities.OrderByDescending(a => a.Date).Take(5).ToList();
+
+            var model = new DashboardViewModel
+            {
+                TotalStudents = totalStudents,
+                TotalTeachers = totalTeachers,
+                TotalSubjects = totalSubjects,
+                TotalCourses = totalCourses,
+                RecentActivities = recentActivities
+            };
+
+            return View(model);
         }
 
         // ==========================
@@ -101,7 +144,7 @@ namespace CSharpGradingSystem.Controllers
 
 
 
-
+        // GET: Create Student
         [HttpGet]
         public IActionResult CreateStudent()
         {
@@ -123,19 +166,27 @@ namespace CSharpGradingSystem.Controllers
             string generatedId = $"{yearPrefix}-{nextNumber:D4}";
             var student = new Student { StudentID = generatedId };
 
-            // ✅ Only approved "User" accounts
+            // Only approved "User" accounts not already assigned to a student
+            var assignedUserIds = _context.Students.Select(s => s.UserAccountId).ToList();
             ViewBag.UserAccounts = _context.UserAccounts
-                                           .Where(u => u.IsApproved && u.Role == "User")
-                                           .OrderBy(u => u.Email) // sorted by Email
+                                           .Where(u => u.IsApproved && u.Role == "User" && !assignedUserIds.Contains(u.Id))
+                                           .OrderBy(u => u.Email)
                                            .ToList();
 
             return View(student);
         }
 
+        // POST: Create Student
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateStudent(Student model)
         {
+            // Check if the selected UserAccount is already assigned
+            if (_context.Students.Any(s => s.UserAccountId == model.UserAccountId))
+            {
+                ModelState.AddModelError("UserAccountId", "This user account is already assigned to another student.");
+            }
+
             if (ModelState.IsValid)
             {
                 // Generate StudentID
@@ -162,9 +213,10 @@ namespace CSharpGradingSystem.Controllers
                 return RedirectToAction(nameof(Student));
             }
 
-            // Reload approved accounts
+            // Reload approved accounts excluding already assigned ones
+            var assignedUserIds = _context.Students.Select(s => s.UserAccountId).ToList();
             ViewBag.UserAccounts = _context.UserAccounts
-                                           .Where(u => u.IsApproved)
+                                           .Where(u => u.IsApproved && u.Role == "User" && !assignedUserIds.Contains(u.Id))
                                            .OrderBy(u => u.Email)
                                            .ToList();
 
@@ -176,41 +228,80 @@ namespace CSharpGradingSystem.Controllers
 
 
 
-        [HttpGet]
+        // GET: Edit Student
         public IActionResult EditStudent(int id)
         {
-            var student = _context.Students.FirstOrDefault(s => s.Id == id);
+            var student = _context.Students.Find(id);
             if (student == null) return NotFound();
 
-            ViewBag.UserAccounts = _context.UserAccounts
-                                           .Where(u => u.IsApproved)
-                                           .OrderBy(u => u.Email)
-                                           .ToList();
-
+            PopulateDropdowns(student);
             return View(student);
         }
 
+        // POST: Edit Student
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditStudent(Student model)
+        public IActionResult EditStudent(Student student)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Students.Update(model);
-                _context.SaveChanges();
-
-                TempData["SuccessMessage"] = "Student updated successfully!";
-                return RedirectToAction(nameof(Student));
+                // Reload dropdowns if validation fails
+                PopulateDropdowns(student);
+                return View(student); // Return the same view with errors
             }
 
-            ViewBag.UserAccounts = _context.UserAccounts
-                                           .Where(u => u.IsApproved)
-                                           .OrderBy(u => u.Email)
-                                           .ToList();
+            try
+            {
+                _context.Update(student);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Student updated successfully!";
+            }
+            catch (Exception ex)
+            {
+                // Optional: log the error
+                TempData["ErrorMessage"] = "Error updating student: " + ex.Message;
+                PopulateDropdowns(student);
+                return View(student);
+            }
 
-            TempData["ErrorMessage"] = "Update failed. Please try again.";
-            return View(model);
+            return RedirectToAction("Student"); // Back to student list
         }
+
+        // Helper method to populate dropdowns
+        private void PopulateDropdowns(Student student)
+        {
+            ViewBag.Courses = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Bachelor of Science in Information Technology", Value = "Bachelor of Science in Information Technology" },
+        new SelectListItem { Text = "Bachelor of Science in Business Administration", Value = "Bachelor of Science in Business Administration" },
+        new SelectListItem { Text = "Bachelor of Secondary Education", Value = "Bachelor of Secondary Education" },
+        new SelectListItem { Text = "Bachelor of Science in Criminology", Value = "Bachelor of Science in Criminology" }
+    };
+
+            ViewBag.YearLevels = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "1st Year", Value = "1st Year" },
+        new SelectListItem { Text = "2nd Year", Value = "2nd Year" },
+        new SelectListItem { Text = "3rd Year", Value = "3rd Year" },
+        new SelectListItem { Text = "4th Year", Value = "4th Year" }
+    };
+
+            ViewBag.StatusList = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Active", Value = "Active" },
+        new SelectListItem { Text = "Inactive", Value = "Inactive" }
+    };
+
+            ViewBag.UserAccounts = _context.UserAccounts
+                .Select(u => new SelectListItem
+                {
+                    Text = u.Email,
+                    Value = u.Id.ToString()
+                }).ToList();
+        }
+
+
+
 
         [HttpGet]
         public IActionResult DeleteStudent(int id)
@@ -243,9 +334,12 @@ namespace CSharpGradingSystem.Controllers
         [HttpGet]
         public IActionResult CreateTeacher()
         {
-            // Only approved user accounts for email selection
+            // Emails already assigned to teachers
+            var assignedEmails = _context.Teachers.Select(t => t.Email).ToList();
+
+            // Only approved UserAccounts with role "Teacher" and not yet assigned
             ViewBag.UserAccounts = _context.UserAccounts
-                                           .Where(u => u.IsApproved && u.Role == "Teacher")
+                                           .Where(u => u.IsApproved && u.Role == "Teacher" && !assignedEmails.Contains(u.Email))
                                            .OrderBy(u => u.Email)
                                            .ToList();
 
@@ -258,69 +352,111 @@ namespace CSharpGradingSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Map selected Email to UserAccountId
-                if (!string.IsNullOrEmpty(model.Email))
+                // Prevent duplicate email assignment
+                if (_context.Teachers.Any(t => t.Email == model.Email))
                 {
+                    TempData["ErrorMessage"] = "This email is already assigned to another teacher.";
+                }
+                else
+                {
+                    // Map UserAccountId from selected email
                     var user = _context.UserAccounts
-                                       .FirstOrDefault(u => u.Email == model.Email && u.Role == "Teacher");
-                    if (user != null)
+                                       .FirstOrDefault(u => u.Email == model.Email && u.IsApproved && u.Role == "Teacher");
+
+                    if (user == null)
                     {
-                        model.UserAccountId = user.Id;
-                        model.Email = user.Email; // optional, just to ensure consistency
+                        TempData["ErrorMessage"] = "Selected email does not exist or is not approved.";
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Selected email does not exist.";
-                        ViewBag.UserAccounts = _context.UserAccounts
-                                                       .Where(u => u.IsApproved && u.Role == "Teacher")
-                                                       .OrderBy(u => u.Email)
-                                                       .ToList();
-                        return View(model);
+                        model.UserAccountId = user.Id;
+                        model.Email = user.Email;
+
+                        _context.Teachers.Add(model);
+                        _context.SaveChanges();
+
+                        TempData["SuccessMessage"] = "Teacher added successfully!";
+                        return RedirectToAction(nameof(Teachers));
                     }
                 }
-
-                _context.Teachers.Add(model);
-                _context.SaveChanges();
-                TempData["SuccessMessage"] = "Teacher added successfully!";
-                return RedirectToAction(nameof(Teachers));
             }
 
             // Reload dropdown if validation fails
+            var assignedEmails = _context.Teachers.Select(t => t.Email).ToList();
             ViewBag.UserAccounts = _context.UserAccounts
-                                           .Where(u => u.IsApproved && u.Role == "Teacher")
+                                           .Where(u => u.IsApproved && u.Role == "Teacher" && !assignedEmails.Contains(u.Email))
                                            .OrderBy(u => u.Email)
                                            .ToList();
 
-            TempData["ErrorMessage"] = "Please correct the errors and try again.";
             return View(model);
         }
 
 
 
-        [HttpGet]
+        // GET: Edit Teacher
         public IActionResult EditTeacher(int id)
         {
-            var teacher = _context.Teachers.FirstOrDefault(t => t.Id == id);
+            var teacher = _context.Teachers.Find(id);
             if (teacher == null) return NotFound();
 
+            PopulateDropdowns(teacher);
             return View(teacher);
         }
 
+        // POST: Edit Teacher
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditTeacher(Teacher model)
+        public IActionResult EditTeacher(Teacher teacher)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Teachers.Update(model);
-                _context.SaveChanges();
-                TempData["SuccessMessage"] = "Teacher updated successfully!";
-                return RedirectToAction(nameof(Teachers));
+                PopulateDropdowns(teacher);
+                return View(teacher); // Return the same view with validation errors
             }
 
-            TempData["ErrorMessage"] = "Update failed. Please try again.";
-            return View(model);
+            try
+            {
+                _context.Update(teacher);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Teacher updated successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error updating teacher: " + ex.Message;
+                PopulateDropdowns(teacher);
+                return View(teacher);
+            }
+
+            return RedirectToAction("Teachers"); // Back to teacher list
         }
+
+        // Helper to populate dropdowns
+        private void PopulateDropdowns(Teacher teacher)
+        {
+            ViewBag.Departments = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Department of Computer Studies", Value = "Department of Computer Studies" },
+                new SelectListItem { Text = "Department of Business Administration", Value = "Department of Business Administration" },
+                new SelectListItem { Text = "Department of Education", Value = "Department of Education" },
+                new SelectListItem { Text = "Department of Criminal Justice", Value = "Department of Criminal Justice" }
+            };
+
+            ViewBag.StatusList = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Active", Value = "Active" },
+                new SelectListItem { Text = "Inactive", Value = "Inactive" }
+            };
+
+            ViewBag.UserAccounts = _context.UserAccounts
+                .Select(u => new SelectListItem
+                {
+                    Text = u.Email,
+                    Value = u.Id.ToString()
+                }).ToList();
+        }
+
+
+
 
         [HttpGet]
         public IActionResult DeleteTeacher(int id)
@@ -370,30 +506,64 @@ namespace CSharpGradingSystem.Controllers
             return View(model);
         }
 
-        [HttpGet]
+
+
+        // GET: EditSubject
         public IActionResult EditSubject(int id)
         {
-            var subject = _context.Subjects.FirstOrDefault(s => s.Id == id);
+            var subject = _context.Subjects.Find(id);
             if (subject == null) return NotFound();
+
+            // Dropdowns
+            ViewBag.Departments = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Department of Computer Studies", Value = "Department of Computer Studies" },
+        new SelectListItem { Text = "Department of Business Administration", Value = "Department of Business Administration" },
+        new SelectListItem { Text = "Department of Education", Value = "Department of Education" },
+        new SelectListItem { Text = "Department of Criminal Justice", Value = "Department of Criminal Justice" }
+    };
+
+            ViewBag.Teachers = _context.Teachers.Select(t => new SelectListItem
+            {
+                Text = t.FullName,
+                Value = t.Id.ToString()
+            }).ToList();
+
+            ViewBag.Semesters = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "1st Semester", Value = "1st Semester" },
+        new SelectListItem { Text = "2nd Semester", Value = "2nd Semester" }
+    };
+
+            // Status options
+            ViewBag.Statuses = new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Active", Value = "Active" },
+        new SelectListItem { Text = "Inactive", Value = "Inactive" }
+    };
 
             return View(subject);
         }
 
+        // POST: EditSubject
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditSubject(Subject model)
+        public IActionResult EditSubject(Subject subject)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Subjects.Update(model);
-                _context.SaveChanges();
-                TempData["SuccessMessage"] = "Subject updated successfully!";
-                return RedirectToAction(nameof(Subjects));
+                // Reload dropdowns if validation fails
+                return RedirectToAction(nameof(EditSubject), new { id = subject.Id });
             }
 
-            TempData["ErrorMessage"] = "Update failed. Please try again.";
-            return View(model);
+            _context.Update(subject);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Subject updated successfully!";
+            return RedirectToAction("Subjects");
         }
+
+
+
 
         [HttpGet]
         public IActionResult DeleteSubject(int id)
@@ -465,6 +635,41 @@ namespace CSharpGradingSystem.Controllers
             }
 
             return RedirectToAction(nameof(AssignSubject));
+        }
+
+
+        public async Task<IActionResult> StudentGrades()
+        {
+            var grades = await _context.Grades
+                .Include(g => g.Student)
+                .Include(g => g.Subject)
+                    .ThenInclude(s => s.AssignedTeacher)
+                .ToListAsync();
+
+            var studentGroups = grades
+                .GroupBy(g => g.StudentId)
+                .Select(g => new StudentGradeViewModel
+                {
+                    StudentId = g.Key,
+                    StudentName = g.First().Student!.FullName,
+                    Course = g.First().Student!.Course,
+                    YearLevel = g.First().Student!.YearLevel,
+                    Grades = g.Select(x => new GradeDetail
+                    {
+                        SubjectName = x.Subject!.SubjectName,
+                        TeacherName = x.Subject.AssignedTeacher?.FullName ?? "",
+                        Prelim = x.Prelim,
+                        Midterm = x.Midterm,
+                        SemiFinal = x.SemiFinal,
+                        Final = x.Final,
+                        FinalGrade = x.FinalGrade
+                    }).ToList()
+                })
+                .OrderBy(s => s.Course)
+                .ThenBy(s => s.YearLevel)
+                .ToList();
+
+            return View(studentGroups);
         }
     }
 }

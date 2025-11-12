@@ -1,53 +1,61 @@
-﻿@{
+﻿@model GradingSystem.Models.DashboardViewModel
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Admin Dashboard";
-  
 }
 
+<!-- Link the CSS -->
+<link rel="stylesheet" href="~/css/admin-dashboard.css" />
 
 <section class="dashboard-section">
 
-    <h2 class="dashboard-title">Admin Dashboard</h2>
-
-    <!-- Summary Cards -->
-    <div class="dashboard-cards">
-        <div class="card">
-            <div class="card-icon"><i data-lucide="users"></i></div>
-            <div class="card-info">
-                <h5>Total Students</h5>
-                <h2>0</h2>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-icon"><i data-lucide="user-check"></i></div>
-            <div class="card-info">
-                <h5>Total Teachers</h5>
-                <h2>0</h2>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-icon"><i data-lucide="book"></i></div>
-            <div class="card-info">
-                <h5>Total Courses</h5>
-                <h2>0</h2>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-icon"><i data-lucide="layers"></i></div>
-            <div class="card-info">
-                <h5>Total Classes</h5>
-                <h2>0</h2>
-            </div>
+    <!-- Banner -->
+    <div class="dashboard-banner mb-4">
+        <div class="banner-text">
+            <h1>Welcome Back, Admin!</h1>
+            <p>Here's a summary of your school's latest data</p>
         </div>
     </div>
 
+    <!-- Summary Cards -->
+    <div class="dashboard-cards">
+        <a href="@Url.Action("Index", "Student")" class="card card-gradient bg-primary text-white">
+            <div class="card-icon animate-icon"><i data-lucide="users"></i></div>
+            <div class="card-info">
+                <h5>Total Students</h5>
+                <h2>@Model.TotalStudents</h2>
+            </div>
+        </a>
+
+        <a href="@Url.Action("Index", "Teacher")" class="card card-gradient bg-success text-white">
+            <div class="card-icon animate-icon"><i data-lucide="user-check"></i></div>
+            <div class="card-info">
+                <h5>Total Teachers</h5>
+                <h2>@Model.TotalTeachers</h2>
+            </div>
+        </a>
+
+        <a href="@Url.Action("Index", "Subject")" class="card card-gradient bg-warning text-white">
+            <div class="card-icon animate-icon"><i data-lucide="book"></i></div>
+            <div class="card-info">
+                <h5>Total Subjects</h5>
+                <h2>@Model.TotalSubjects</h2>
+            </div>
+        </a>
+
+        <a href="@Url.Action("Index", "Course")" class="card card-gradient bg-info text-white">
+            <div class="card-icon animate-icon"><i data-lucide="layers"></i></div>
+            <div class="card-info">
+                <h5>Total Courses</h5>
+                <h2>@Model.TotalCourses</h2>
+            </div>
+        </a>
+    </div>
+
     <!-- Recent Activity Table -->
-    <div class="recent-activities mt-4">
+    <div class="recent-activities mt-5">
         <h4>Recent Activities</h4>
-        <table class="table table-hover align-middle">
+        <table class="table table-hover align-middle shadow-sm">
             <thead class="table-light">
                 <tr>
                     <th>Date</th>
@@ -56,115 +64,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Oct 10, 2025</td>
-                    <td>New student record added</td>
-                    <td>Registrar Admin</td>
-                </tr>
-                <tr>
-                    <td>Oct 09, 2025</td>
-                    <td>Grade verification completed</td>
-                    <td>Registrar Staff</td>
-                </tr>
-                <tr>
-                    <td>Oct 08, 2025</td>
-                    <td>Course updated</td>
-                    <td>Registrar Office</td>
-                </tr>
+                @foreach (var activity in Model.RecentActivities)
+                {
+                    <tr>
+                        <td>@activity.Date.ToString("MMM dd, yyyy")</td>
+                        <td>@activity.Description</td>
+                        <td>@activity.PerformedBy</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 
 </section>
-
-@section Styles {
-    <style>
-        .dashboard-section {
-            padding: 20px;
-            background-color: #f9fafc;
-            min-height: 100vh;
-        }
-
-        .dashboard-title {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 25px;
-        }
-
-        /* Cards Layout */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-
-            .card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-            }
-
-        .card-icon {
-            background-color: #007bff;
-            color: white;
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 15px;
-        }
-
-            .card-icon i {
-                width: 28px;
-                height: 28px;
-            }
-
-        .card-info h5 {
-            color: #666;
-            font-weight: 500;
-            margin: 0;
-        }
-
-        .card-info h2 {
-            font-weight: 700;
-            color: #007bff;
-            margin-top: 5px;
-        }
-
-        /* Table Section */
-        .recent-activities {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-        }
-
-            .recent-activities h4 {
-                margin-bottom: 20px;
-                font-weight: 600;
-                color: #333;
-            }
-
-        .table th {
-            color: #555;
-            font-weight: 600;
-        }
-
-        .table td {
-            color: #333;
-        }
-    </style>
-}
 
 @section Scripts {
     <script>
