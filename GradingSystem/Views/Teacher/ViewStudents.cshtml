@@ -1,0 +1,65 @@
+﻿@model IEnumerable<GradingSystem.Models.Student>
+
+@{
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+    ViewData["Title"] = "Enrolled Students";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary fw-bold">Enrolled Students</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Profile</th>
+                        <th scope="col">Student ID</th>
+                        <th scope="col">Full Name</th>
+                        <th scope="col">Course</th>
+                        <th scope="col">Year Level</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var student in Model.Select((value, index) => new { value, index }))
+                    {
+                        <tr>
+                            <td>@(student.index + 1)</td>
+                            <td>
+                                <img src="@(string.IsNullOrEmpty(student.value.ProfilePicturePath)
+                                                                                   ? "~/images/default-profile.png"
+                                                                                   : student.value.ProfilePicturePath)"
+                             class="rounded-circle" width="40" height="40" />
+                    </td>
+                    <td>@student.value.StudentID</td>
+                    <td>@student.value.FullName</td>
+                    <td>@student.value.Course</td>
+                    <td>@student.value.YearLevel</td>
+                    <td>
+                        <span class="badge @(student.value.Status == "Active" ? "bg-success" : "bg-secondary")">
+                            @student.value.Status
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <a href="@Url.Action("ManageGrades", "Teacher", new { studentId = student.value.Id })"
+                           class="btn btn-sm btn-primary rounded-pill">
+                            <i class="bi bi-pencil-square me-1"></i> Manage Grade
+                        </a>
+                    </td>
+                </tr>
+                                }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center py-4 rounded">
+            No students enrolled for this subject yet.
+        </div>
+    }
+</div>

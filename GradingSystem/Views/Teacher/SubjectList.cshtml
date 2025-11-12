@@ -1,0 +1,121 @@
+﻿@model IEnumerable<GradingSystem.Models.Subject>
+
+@{
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+    ViewData["Title"] = "My Subjects";
+}
+
+<!-- 🌅 Banner Section -->
+<div id="teacherBanner" class="mb-5 position-relative overflow-hidden rounded shadow-sm"
+     style="
+        height: 280px;
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                    url('/images/Banner1.jpg') center center / cover no-repeat;
+        color: white;
+    ">
+
+    <div class="d-flex flex-column justify-content-center align-items-start h-100 px-5">
+        <h1 class="fw-bold" style="
+            font-size: 2.3rem;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out forwards;">
+            My Subjects
+        </h1>
+        <p class="lead" style="
+            font-size: 1.1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.5s ease-out forwards;">
+            Review and manage the subjects you are teaching this semester.
+        </p>
+    </div>
+
+    <style>
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</div>
+
+<!-- 📚 Subject Cards Section -->
+<div class="container">
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var subject in Model)
+            {
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100"
+                         style="transition: transform 0.25s ease, box-shadow 0.25s ease;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="card-title text-primary fw-bold">@subject.SubjectName</h5>
+                                <span class="badge bg-@(subject.Status == "Active" ? "success" : "secondary")">
+                                    @subject.Status
+                                </span>
+                            </div>
+
+                            <p class="text-muted mb-1"><strong>Code:</strong> @subject.SubjectCode</p>
+                            <p class="text-muted mb-1"><strong>Department:</strong> @subject.Department</p>
+                            <p class="text-muted mb-1"><strong>Units:</strong> @subject.Units</p>
+                            <p class="text-muted mb-1"><strong>Semester:</strong> @subject.Semester</p>
+
+                            <hr />
+
+                            <p class="small text-secondary mb-3">
+                                <strong>Teacher:</strong>
+                                @(subject.AssignedTeacher != null ? subject.AssignedTeacher.FullName : "Unassigned")
+                            </p>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="@Url.Action("ViewStudents", "Teacher", new { subjectId = subject.Id })"
+                                   class="btn btn-outline-primary btn-sm rounded-pill">
+                                    View Students
+                                </a>
+                                <a href="Grades"
+                                   class="btn btn-primary btn-sm rounded-pill">
+                                    Manage Grades
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <h5 class="text-muted">You don’t have any assigned subjects yet.</h5>
+        </div>
+    }
+</div>
+
+<!-- ✨ Hover Effect Script -->
+@section Scripts {
+    <script>
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-6px)';
+                card.style.boxShadow = '0 6px 14px rgba(0,0,0,0.2)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = 'none';
+            });
+        });
+    </script>
+}

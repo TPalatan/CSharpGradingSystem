@@ -13,7 +13,7 @@
         </a>
     </div>
 
-    <!-- ✅ Flash Messages -->
+    <!-- Flash Messages -->
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -79,6 +79,15 @@
                                    onclick="return confirm('Are you sure you want to reject this account?');">
                                     <i class="bi bi-x-circle me-1"></i> Reject
                                 </a>
+
+                                <!-- Message Button -->
+                                <button type="button" class="btn btn-info btn-sm rounded-pill ms-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#messageModal"
+                                        data-userid="@user.Id"
+                                        data-useremail="@user.Email">
+                                    <i class="bi bi-envelope me-1"></i> Message
+                                </button>
                             </td>
                         </tr>
                     }
@@ -87,3 +96,46 @@
         </div>
     }
 </div>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="SendMessage" asp-controller="Admin" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Send Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="UserId" id="messageUserId" />
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" name="Subject" id="subject" class="form-control" required value="Pending Account Notification" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageBody" class="form-label">Message</label>
+                        <textarea name="MessageBody" id="messageBody" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var messageModal = document.getElementById('messageModal');
+        messageModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-userid');
+            var userEmail = button.getAttribute('data-useremail');
+
+            document.getElementById('messageUserId').value = userId;
+            document.getElementById('messageBody').value = `Dear ${userEmail},\n\nPlease visit the school to complete the required documents for account approval.\n\nThank you.`;
+        });
+    </script>
+}

@@ -13,15 +13,15 @@
 
     @if (Model != null && Model.Any())
     {
-        <div class="card grades-table-card mt-4 shadow-sm">
+        <div class="card shadow-sm grades-table-card">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i data-lucide="list"></i> Subject Grades</h5>
                 <span class="fw-light" style="font-size: 14px;">Current Semester</span>
             </div>
 
             <div class="card-body p-0">
-                <table class="table table-hover grades-table mb-0">
-                    <thead class="table-primary text-center">
+                <table class="table table-hover table-bordered grades-table mb-0 text-center">
+                    <thead class="table-primary">
                         <tr>
                             <th>Subject Code</th>
                             <th>Subject Name</th>
@@ -30,7 +30,7 @@
                             <th>Semi-Final</th>
                             <th>Final</th>
                             <th>Final Grade</th>
-                         
+                          
                         </tr>
                     </thead>
                     <tbody>
@@ -41,7 +41,11 @@
                             ? (finalGrade.Value >= 75 ? "Passed" : "Failed")
                             : "In Progress";
 
-                            <tr class="text-center">
+                            string statusClass = status == "Passed" ? "passed"
+                            : status == "Failed" ? "failed"
+                            : "inprogress";
+
+                            <tr>
                                 <td>@grade.Subject?.SubjectCode</td>
                                 <td>@grade.Subject?.SubjectName</td>
                                 <td>@(grade.Prelim?.ToString("0.##") ?? "-")</td>
@@ -49,7 +53,7 @@
                                 <td>@(grade.SemiFinal?.ToString("0.##") ?? "-")</td>
                                 <td>@(grade.Final?.ToString("0.##") ?? "-")</td>
                                 <td><strong>@(grade.FinalGrade?.ToString("0.##") ?? "-")</strong></td>
-                                
+                               
                             </tr>
                         }
                     </tbody>
@@ -98,10 +102,11 @@
     }
 
     .status {
-        padding: 5px 10px;
-        border-radius: 6px;
+        padding: 5px 12px;
+        border-radius: 8px;
         font-weight: 600;
         font-size: 14px;
+        display: inline-block;
     }
 
         .status.passed {
@@ -119,3 +124,9 @@
             color: #856404;
         }
 </style>
+
+@section Scripts {
+    <script>
+        lucide.createIcons();
+    </script>
+}

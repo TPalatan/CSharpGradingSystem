@@ -1,0 +1,70 @@
+﻿@model GradingSystem.Models.Subject
+
+@{
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+    ViewData["Title"] = "Manage Grades";
+}
+
+<div class="container mt-4">
+
+    <h2 class="fw-bold text-primary mb-3">
+        Manage Grades: @Model.SubjectCode - @Model.SubjectName
+    </h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <form asp-action="UpdateGrades" method="post">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Prelim</th>
+                    <th>Midterm</th>
+                    <th>SemiFinal</th>
+                    <th>Final</th>
+                    <th>Final Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var grade in Model.Grades)
+                {
+                    <tr>
+                        <td>@grade.Student?.StudentID</td>
+                        <td>@grade.Student?.FullName</td>
+                        <td>
+                            <input type="number" name="[@grade.Id].Prelim" value="@grade.Prelim"
+                                   class="form-control" min="0" max="100" step="0.01" />
+                        </td>
+                        <td>
+                            <input type="number" name="[@grade.Id].Midterm" value="@grade.Midterm"
+                                   class="form-control" min="0" max="100" step="0.01" />
+                        </td>
+                        <td>
+                            <input type="number" name="[@grade.Id].SemiFinal" value="@grade.SemiFinal"
+                                   class="form-control" min="0" max="100" step="0.01" />
+                        </td>
+                        <td>
+                            <input type="number" name="[@grade.Id].Final" value="@grade.Final"
+                                   class="form-control" min="0" max="100" step="0.01" />
+                        </td>
+                        <td>@grade.FinalGrade?.ToString("F2")</td>
+
+                        <!-- Hidden fields -->
+                        <input type="hidden" name="[@grade.Id].Id" value="@grade.Id" />
+                        <input type="hidden" name="[@grade.Id].StudentId" value="@grade.StudentId" />
+                        <input type="hidden" name="[@grade.Id].SubjectId" value="@grade.SubjectId" />
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success">Save Grades</button>
+        <a href="@Url.Action("MySubjects", "Teacher")" class="btn btn-secondary ms-2">Back to Subjects</a>
+    </form>
+</div>

@@ -200,5 +200,98 @@ namespace CSharpGradingSystem.Controllers
 
             return View(subjectStudentsDict);
         }
+        public IActionResult SubjectList()
+        {
+            // Example: get logged-in teacher (replace with your logic)
+            int teacherId = 1; // e.g., from session or authentication
+
+            var subjects = _context.Subjects
+                .Include(s => s.AssignedTeacher)
+                .Where(s => s.AssignedTeacherId == teacherId)
+                .ToList();
+
+            return View(subjects);
+        }
+
+        // GET: View Students in a Subject
+        public IActionResult ViewStudents(int subjectId)
+        {
+            var subject = _context.Subjects
+                .Include(s => s.AssignedTeacher)
+                .FirstOrDefault(s => s.Id == subjectId);
+
+            if (subject == null)
+                return NotFound();
+
+            // Get students who have grades for this subject
+            var students = _context.Grades
+                .Where(g => g.SubjectId == subjectId)
+                .Include(g => g.Student)
+                .Select(g => g.Student)
+                .Distinct()
+                .ToList();
+
+            ViewBag.SubjectName = $"{subject.SubjectCode} - {subject.SubjectName}";
+            return View(students);
+        }
+
+        // GET: Manage Grades for a Subject
+        public IActionResult ManageGrades(int subjectId)
+        {
+            var subject = _context.Subjects
+                .Include(s => s.AssignedTeacher)
+                .Include(s => s.Grades)
+                    .ThenInclude(g => g.Student)
+                .FirstOrDefault(s => s.Id == subjectId);
+
+            if (subject == null)
+                return NotFound();
+
+            return View(subject);
+        }
+
+        // POST: Update Grades
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateGrades(List<Grade> grades)
+        {
+            if (grades == null || !grades.Any())
+                return RedirectToAction("MySubjects");
+
+            foreach (var grade in grades)
+            {
+                var existingGrade = _context.Grades.FirstOrDefault(g => g.Id == grade.Id);
+                if (existingGrade != null)
+                {
+                    existingGrade.Prelim = grade.Prelim;
+                    existingGrade.Midterm = grade.Midterm;
+                    existingGrade.SemiFinal = grade.SemiFinal;
+                    existingGrade.Final = grade.Final;
+                    existingGrade.FinalGrade = CalculateFinalGrade(
+                        grade.Prelim, grade.Midterm, grade.SemiFinal, grade.Final);
+                }
+            }
+
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Grades updated successfully!";
+            return RedirectToAction("ManageGrades", new { subjectId = grades.First().SubjectId });
+        }
+
+        // Helper method: Calculate final grade
+        private double? CalculateFinalGrade(double? prelim, double? midterm, double? semiFinal, double? final)
+        {
+            var total = 0.0;
+            var count = 0;
+
+            if (prelim.HasValue) { total += prelim.Value; count++; }
+            if (midterm.HasValue) { total += midterm.Value; count++; }
+            if (semiFinal.HasValue) { total += semiFinal.Value; count++; }
+            if (final.HasValue) { total += final.Value; count++; }
+
+            if (count == 0) return null;
+            return Math.Round(total / count, 2);
+        }
+
     }
 }
+

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 
 namespace CSharpGradingSystem.Controllers
 {
@@ -129,6 +131,74 @@ namespace CSharpGradingSystem.Controllers
             TempData["SuccessMessage"] = $"Account '{user.Email}' has been rejected and removed.";
             return RedirectToAction(nameof(PendingAccounts));
         }
+
+
+
+        // -----------------------
+        // EMAIL SENDING METHOD
+        // -----------------------
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                var fromAddress = new MailAddress("gradingsystem056@gmail.com", "Grading System");
+                var toAddress = new MailAddress(toEmail);
+                const string fromPassword = "sbsufxtiirvuczhr"; // App Password
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Host = "smtp.gmail.com";
+                    smtp.Port = 587; // TLS port
+                    smtp.EnableSsl = true;
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential(fromAddress.Address, fromPassword);
+
+                    using (var message = new MailMessage(fromAddress, toAddress)
+                    {
+                        Subject = subject,
+                        Body = body,
+                        IsBodyHtml = false // change to true if you send HTML
+                    })
+                    {
+                        smtp.Send(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Email sending failed: {ex.Message}");
+            }
+        }
+
+        // -----------------------
+        // SEND MESSAGE ACTION
+        // -----------------------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SendMessage(int UserId, string Subject, string MessageBody)
+        {
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == UserId);
+
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found!";
+                return RedirectToAction("PendingAccounts");
+            }
+
+            try
+            {
+                SendEmail(user.Email, Subject, MessageBody);
+                TempData["SuccessMessage"] = $"Message successfully sent to {user.Email}.";
+            }
+            catch
+            {
+                TempData["ErrorMessage"] = "Failed to send the message. Please check email settings.";
+            }
+
+            return RedirectToAction("PendingAccounts");
+        }
+
 
         // ==========================
         // 🔹 STUDENT MANAGEMENT

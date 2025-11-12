@@ -1,4 +1,4 @@
-/* Sidebar Search */
+﻿/* Sidebar Search */
 .sidebar-search {
     padding: 15px;
     border-bottom: 1px solid #ddd;
@@ -870,4 +870,6 @@ footer.footer-content {
 .table-hover tbody tr:hover {
     background-color: #f1f5f9;
 }
+
+
 

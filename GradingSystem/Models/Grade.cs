@@ -34,5 +34,6 @@ namespace GradingSystem.Models
 
         [ForeignKey("SubjectId")]
         public Subject? Subject { get; set; }
+
     }
 }

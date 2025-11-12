@@ -46,5 +46,8 @@ namespace GradingSystem.Models
         // Not mapped property to populate dropdown in the view
         [NotMapped]
         public SelectList? TeacherList { get; set; }
+
+        // Navigation property to Grades
+        public ICollection<Grade>? Grades { get; set; }
     }
 }
