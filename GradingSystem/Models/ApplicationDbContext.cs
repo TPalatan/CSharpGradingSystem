@@ -19,6 +19,9 @@ namespace CSharpGradingSystem.Data
 
         public DbSet<Grade> Grades { get; set; }
 
+        public DbSet<SystemSettings> SystemSettings { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

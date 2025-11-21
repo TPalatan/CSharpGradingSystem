@@ -3,10 +3,54 @@
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Student Grades";
+
+    bool isInputOpen = ViewBag.IsInputOpen ?? false;
 }
 
 <div class="container-fluid py-4">
     <h2 class="mb-4 text-primary fw-bold">Student Grades</h2>
+
+    <!-- Status Banner -->
+    <div class="alert @(isInputOpen ? "alert-success" : "alert-danger") fw-bold">
+        Grade Inputting is
+        <span class="@(isInputOpen ? "text-success" : "text-danger")">
+            @(isInputOpen ? "OPEN" : "CLOSED")
+        </span>
+    </div>
+
+    <!-- Error Message -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger fw-bold">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success fw-bold">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- Buttons Section -->
+    <div class="mb-4 d-flex gap-3">
+        @if (!isInputOpen)
+        {
+            <!-- Start Inputting -->
+            <a href="@Url.Action("StartInputting", "Admin")" class="btn btn-primary">
+                <i class="bi bi-pencil-square"></i> Start Inputting
+            </a>
+        }
+        else
+        {
+            <!-- Close Inputting -->
+            <a href="@Url.Action("CloseInputting", "Admin")" class="btn btn-danger">
+                <i class="bi bi-x-circle"></i> Close Inputting
+            </a>
+        }
+    </div>
 
     @foreach (var courseGroup in Model.GroupBy(s => s.Course))
     {
@@ -105,6 +149,14 @@
         .year-title {
             color: #0056b3;
             font-weight: 600;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding-left: 16px;
+            padding-right: 16px;
         }
     </style>
 }

@@ -213,28 +213,11 @@ namespace CSharpGradingSystem.Controllers
 
 
 
-
         // GET: Create Student
         [HttpGet]
         public IActionResult CreateStudent()
         {
-            // Generate StudentID
-            string yearPrefix = DateTime.Now.Year.ToString().Substring(2, 2);
-            var latestStudent = _context.Students
-                .Where(s => s.StudentID.StartsWith(yearPrefix))
-                .OrderByDescending(s => s.StudentID)
-                .FirstOrDefault();
-
-            int nextNumber = 1;
-            if (latestStudent != null)
-            {
-                string[] parts = latestStudent.StudentID.Split('-');
-                if (parts.Length == 2 && int.TryParse(parts[1], out int lastNumber))
-                    nextNumber = lastNumber + 1;
-            }
-
-            string generatedId = $"{yearPrefix}-{nextNumber:D4}";
-            var student = new Student { StudentID = generatedId };
+            var student = new Student(); // No generated ID
 
             // Only approved "User" accounts not already assigned to a student
             var assignedUserIds = _context.Students.Select(s => s.UserAccountId).ToList();
@@ -259,27 +242,11 @@ namespace CSharpGradingSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                // Generate StudentID
-                string yearPrefix = DateTime.Now.Year.ToString().Substring(2, 2);
-                var latestStudent = _context.Students
-                    .Where(s => s.StudentID.StartsWith(yearPrefix))
-                    .OrderByDescending(s => s.StudentID)
-                    .FirstOrDefault();
-
-                int nextNumber = 1;
-                if (latestStudent != null)
-                {
-                    string[] parts = latestStudent.StudentID.Split('-');
-                    if (parts.Length == 2 && int.TryParse(parts[1], out int lastNumber))
-                        nextNumber = lastNumber + 1;
-                }
-
-                model.StudentID = $"{yearPrefix}-{nextNumber:D4}";
-
+                // No StudentID generation here
                 _context.Students.Add(model);
                 _context.SaveChanges();
 
-                TempData["SuccessMessage"] = $"Student added successfully! ID: {model.StudentID}";
+                TempData["SuccessMessage"] = $"Student added successfully!";
                 return RedirectToAction(nameof(Student));
             }
 
@@ -293,6 +260,7 @@ namespace CSharpGradingSystem.Controllers
             TempData["ErrorMessage"] = "Please correct the errors and try again.";
             return View(model);
         }
+
 
 
 
@@ -739,7 +707,58 @@ namespace CSharpGradingSystem.Controllers
                 .ThenBy(s => s.YearLevel)
                 .ToList();
 
+            // Pass inputting status to view
+            ViewBag.IsInputOpen = _context.SystemSettings.FirstOrDefault()?.IsInputtingEnabled ?? false;
+
             return View(studentGroups);
         }
+
+        // ==========================
+        // 🔹 GRADE INPUT CONTROL
+        // ==========================
+
+        // Display student grades
+
+
+        // Enable inputting (Open)
+        public IActionResult StartInputting()
+        {
+            var status = _context.SystemSettings.FirstOrDefault();
+            if (status == null)
+            {
+                status = new SystemSettings { IsInputtingEnabled = true };
+                _context.SystemSettings.Add(status);
+            }
+            else
+            {
+                status.IsInputtingEnabled = true;
+            }
+
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Grade inputting is now OPEN.";
+            return RedirectToAction("StudentGrades");
+        }
+
+        // Disable inputting (Close)
+        public IActionResult CloseInputting()
+        {
+            var status = _context.SystemSettings.FirstOrDefault();
+            if (status == null)
+            {
+                status = new SystemSettings { IsInputtingEnabled = false };
+                _context.SystemSettings.Add(status);
+            }
+            else
+            {
+                status.IsInputtingEnabled = false;
+            }
+
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Grade inputting is now CLOSED.";
+            return RedirectToAction("StudentGrades");
+        }
+
+
+
     }
 }

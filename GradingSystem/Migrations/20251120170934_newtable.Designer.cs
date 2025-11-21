@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GradingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251112173546_createFinalTable")]
-    partial class createFinalTable
+    [Migration("20251120170934_newtable")]
+    partial class newtable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -176,6 +176,22 @@ namespace GradingSystem.Migrations
                     b.HasIndex("AssignedTeacherId");
 
                     b.ToTable("Subjects");
+                });
+
+            modelBuilder.Entity("GradingSystem.Models.SystemSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsInputtingEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemSettings");
                 });
 
             modelBuilder.Entity("GradingSystem.Models.Teacher", b =>

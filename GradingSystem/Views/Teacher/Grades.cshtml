@@ -1,7 +1,10 @@
 ﻿@model IDictionary<GradingSystem.Models.Subject, List<GradingSystem.Models.Student>>
+
 @{
     Layout = "~/Views/Shared/_TeacherLayout.cshtml";
     ViewData["Title"] = "Grades";
+
+    bool isInputOpen = ViewBag.IsInputOpen ?? false;
 }
 
 <div style="max-width: 1200px; margin: 30px auto; font-family: 'Segoe UI', sans-serif;">
@@ -11,6 +14,20 @@
     {
         <div style="background:#d4edda; color:#155724; padding:10px 15px; border-radius:5px; margin-bottom:20px;">
             @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div style="background:#f8d7da; color:#721c24; padding:10px 15px; border-radius:5px; margin-bottom:20px;">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (!isInputOpen)
+    {
+        <div style="background:#fff3cd; color:#856404; padding:10px 15px; border-radius:5px; margin-bottom:25px;">
+            Grade inputting is <strong>CLOSED</strong>. You cannot edit grades at the moment.
         </div>
     }
 
@@ -49,37 +66,76 @@
                                 <td style="padding:8px;">@student.StudentID</td>
                                 <td>@student.FullName</td>
                                 <td>@student.Course</td>
+
+                                <!-- Prelim -->
                                 <td>
-                                    <input type="number" name="prelim" min="0" max="100" step="0.1" style="width:70px;"
-                                           value="@(grade?.Prelim.HasValue == true ? grade.Prelim.Value.ToString("0.##") : "")" />
-                                </td>
-                                <td>
-                                    <input type="number" name="midterm" min="0" max="100" step="0.1" style="width:70px;"
-                                           value="@(grade?.Midterm.HasValue == true ? grade.Midterm.Value.ToString("0.##") : "")" />
-                                </td>
-                                <td>
-                                    <input type="number" name="semifinal" min="0" max="100" step="0.1" style="width:70px;"
-                                           value="@(grade?.SemiFinal.HasValue == true ? grade.SemiFinal.Value.ToString("0.##") : "")" />
-                                </td>
-                                <td>
-                                    <input type="number" name="final" min="0" max="100" step="0.1" style="width:70px;"
-                                           value="@(grade?.Final.HasValue == true ? grade.Final.Value.ToString("0.##") : "")" />
-                                </td>
-                                <td>
-                                    <input type="text" readonly style="width:80px; background:#f5f5f5;"
-                                           value="@(grade?.FinalGrade.HasValue == true ? grade.FinalGrade.Value.ToString("0.##") : "")" />
+                                    <input type="number"
+                                           name="prelim[]"
+                                           min="0" max="100" step="0.1"
+                                           style="width:70px;"
+                                           value="@(grade?.Prelim?.ToString("0.##"))"
+                                           @(isInputOpen ? "" : "disabled") />
                                 </td>
 
-                                <input type="hidden" name="studentIds" value="@student.Id" />
+                                <!-- Midterm -->
+                                <td>
+                                    <input type="number"
+                                           name="midterm[]"
+                                           min="0" max="100" step="0.1"
+                                           style="width:70px;"
+                                           value="@(grade?.Midterm?.ToString("0.##"))"
+                                           @(isInputOpen ? "" : "disabled") />
+                                </td>
+
+                                <!-- SemiFinal -->
+                                <td>
+                                    <input type="number"
+                                           name="semifinal[]"
+                                           min="0" max="100" step="0.1"
+                                           style="width:70px;"
+                                           value="@(grade?.SemiFinal?.ToString("0.##"))"
+                                           @(isInputOpen ? "" : "disabled") />
+                                </td>
+
+                                <!-- Final -->
+                                <td>
+                                    <input type="number"
+                                           name="final[]"
+                                           min="0" max="100" step="0.1"
+                                           style="width:70px;"
+                                           value="@(grade?.Final?.ToString("0.##"))"
+                                           @(isInputOpen ? "" : "disabled") />
+                                </td>
+
+                                <!-- Final Grade (readonly) -->
+                                <td>
+                                    <input type="text" readonly
+                                           style="width:80px; background:#f5f5f5;"
+                                           value="@(grade?.FinalGrade?.ToString("0.##"))" />
+                                </td>
+
+                                <input type="hidden" name="studentIds[]" value="@student.Id" />
                             </tr>
                         }
                     </tbody>
                 </table>
 
                 <div style="margin-top:15px;">
-                    <button type="submit" style="background:#007bff; color:white; padding:10px 15px; border:none; border-radius:5px;">
-                        Save
-                    </button>
+                    @if (isInputOpen)
+                    {
+                        <button type="submit"
+                                style="background:#007bff; color:white; padding:10px 15px; border:none; border-radius:5px;">
+                            Save
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button"
+                                disabled
+                                style="background:#ccc; color:#666; padding:10px 15px; border:none; border-radius:5px;">
+                            Input Closed
+                        </button>
+                    }
                 </div>
             </form>
         }

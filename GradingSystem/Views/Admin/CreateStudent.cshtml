@@ -15,7 +15,7 @@
         <form asp-action="CreateStudent" method="post" class="row g-4 needs-validation" novalidate>
             <div class="col-md-6">
                 <label asp-for="StudentID" class="form-label">Student ID</label>
-                <input asp-for="StudentID" class="form-control form-control-lg" readonly />
+                <input asp-for="StudentID" class="form-control form-control-lg" placeholder="Enter Student ID" />
                 <span asp-validation-for="StudentID" class="text-danger small"></span>
             </div>
 
@@ -83,8 +83,6 @@
                 </select>
                 <span asp-validation-for="UserAccountId" class="text-danger small"></span>
             </div>
-
-
 
             <div class="col-12 text-center mt-4">
                 <button type="submit" class="btn btn-dark btn-lg px-5">

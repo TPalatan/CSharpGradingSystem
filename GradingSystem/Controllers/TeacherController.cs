@@ -21,7 +21,6 @@ namespace CSharpGradingSystem.Controllers
             return View();
         }
 
-        // ✅ View Grades Page
         public IActionResult Grades()
         {
             var email = HttpContext.Session.GetString("Email");
@@ -36,12 +35,15 @@ namespace CSharpGradingSystem.Controllers
             if (teacher == null)
                 return RedirectToAction("Dashboard");
 
-            // Get subjects assigned to teacher
+            // Load system settings
+            var systemSettings = _context.SystemSettings.FirstOrDefault();
+            ViewBag.IsInputOpen = systemSettings != null && systemSettings.IsInputtingEnabled;
+
+            // Get teacher's subjects
             var subjects = _context.Subjects
                 .Where(s => s.AssignedTeacherId == teacher.Id)
                 .ToList();
 
-            // Prepare model: Subject -> List<Student>
             var model = new Dictionary<Subject, List<Student>>();
 
             foreach (var subject in subjects)
@@ -52,7 +54,7 @@ namespace CSharpGradingSystem.Controllers
                     .Select(ssa => ssa.Student!)
                     .ToList();
 
-                // Preload existing grades into ViewData
+                // Load grades
                 foreach (var student in students)
                 {
                     var grade = _context.Grades
@@ -67,15 +69,32 @@ namespace CSharpGradingSystem.Controllers
             return View(model);
         }
 
-        // ✅ Save or Update Grades
+
         [HttpPost]
-        public IActionResult SaveGrades(int subjectId, List<int> studentIds, List<double?> prelim, List<double?> midterm, List<double?> semifinal, List<double?> final)
+        public IActionResult SaveGrades(
+    int subjectId,
+    List<int> studentIds,
+    List<double?> prelim,
+    List<double?> midterm,
+    List<double?> semifinal,
+    List<double?> final)
         {
+            // Check input status
+            var inputStatus = _context.SystemSettings.FirstOrDefault();
+
+            if (inputStatus == null || !inputStatus.IsInputtingEnabled)
+            {
+                TempData["ErrorMessage"] = "Grade inputing is currently disabled by the admin.";
+                return RedirectToAction("Grades");
+            }
+
+            // Save grades only if open
             for (int i = 0; i < studentIds.Count; i++)
             {
-                var studentId = studentIds[i];
+                int studentId = studentIds[i];
 
-                var existingGrade = _context.Grades.FirstOrDefault(g => g.StudentId == studentId && g.SubjectId == subjectId);
+                var existingGrade = _context.Grades
+                    .FirstOrDefault(g => g.StudentId == studentId && g.SubjectId == subjectId);
 
                 if (existingGrade == null)
                 {
@@ -92,17 +111,23 @@ namespace CSharpGradingSystem.Controllers
                 existingGrade.SemiFinal = semifinal[i];
                 existingGrade.Final = final[i];
 
-                // Calculate FinalGrade if all components exist
-                if (prelim[i].HasValue && midterm[i].HasValue && semifinal[i].HasValue && final[i].HasValue)
+                // Calculate final grade
+                if (prelim[i].HasValue && midterm[i].HasValue &&
+                    semifinal[i].HasValue && final[i].HasValue)
                 {
-                    existingGrade.FinalGrade = Math.Round((prelim[i].Value + midterm[i].Value + semifinal[i].Value + final[i].Value) / 4, 2);
+                    existingGrade.FinalGrade =
+                        Math.Round((prelim[i].Value + midterm[i].Value +
+                                    semifinal[i].Value + final[i].Value) / 4, 2);
                 }
             }
 
             _context.SaveChanges();
+
             TempData["SuccessMessage"] = "Grades saved successfully!";
             return RedirectToAction("Grades");
         }
+
+
 
         // ✅ Teacher Profile
         public IActionResult TeacherProfile()
@@ -235,11 +260,9 @@ namespace CSharpGradingSystem.Controllers
             return View(students);
         }
 
-        // GET: Manage Grades for a Subject
         public IActionResult ManageGrades(int subjectId)
         {
             var subject = _context.Subjects
-                .Include(s => s.AssignedTeacher)
                 .Include(s => s.Grades)
                     .ThenInclude(g => g.Student)
                 .FirstOrDefault(s => s.Id == subjectId);
@@ -247,17 +270,54 @@ namespace CSharpGradingSystem.Controllers
             if (subject == null)
                 return NotFound();
 
+            // Get system settings (always 1 row)
+            var systemSettings = _context.SystemSettings.FirstOrDefault();
+
+            if (systemSettings == null)
+            {
+                // Fail-safe: treat as CLOSED
+                ViewBag.IsInputOpen = false;
+                TempData["ErrorMessage"] = "System settings not found. Contact administrator.";
+            }
+            else
+            {
+                // TRUE = Teacher can input
+                // FALSE = Teacher cannot input
+                ViewBag.IsInputOpen = systemSettings.IsInputtingEnabled;
+            }
+
             return View(subject);
         }
 
-        // POST: Update Grades
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateGrades(List<Grade> grades)
         {
             if (grades == null || !grades.Any())
+            {
+                TempData["ErrorMessage"] = "No grades to update.";
                 return RedirectToAction("MySubjects");
+            }
 
+            // Get system settings
+            var systemSettings = _context.SystemSettings.FirstOrDefault();
+
+            if (systemSettings == null)
+            {
+                TempData["ErrorMessage"] = "System settings not found. Cannot save grades.";
+                return RedirectToAction("ManageGrades", new { subjectId = grades.First().SubjectId });
+            }
+
+            bool isInputOpen = systemSettings.IsInputtingEnabled;
+
+            // ❌ If closed, DO NOT SAVE anything
+            if (!isInputOpen)
+            {
+                TempData["ErrorMessage"] = "Grade inputting is CLOSED. You cannot save grades.";
+                return RedirectToAction("ManageGrades", new { subjectId = grades.First().SubjectId });
+            }
+
+            // ✅ If open, save grades
             foreach (var grade in grades)
             {
                 var existingGrade = _context.Grades.FirstOrDefault(g => g.Id == grade.Id);
@@ -267,31 +327,28 @@ namespace CSharpGradingSystem.Controllers
                     existingGrade.Midterm = grade.Midterm;
                     existingGrade.SemiFinal = grade.SemiFinal;
                     existingGrade.Final = grade.Final;
-                    existingGrade.FinalGrade = CalculateFinalGrade(
-                        grade.Prelim, grade.Midterm, grade.SemiFinal, grade.Final);
+
+                    // Compute Final Grade
+                    var values = new double?[] { grade.Prelim, grade.Midterm, grade.SemiFinal, grade.Final }
+                                 .Where(g => g.HasValue)
+                                 .Select(g => g.Value)
+                                 .ToList();
+
+                    existingGrade.FinalGrade = values.Any()
+                        ? Math.Round(values.Average(), 2)
+                        : null;
                 }
             }
 
             _context.SaveChanges();
+
             TempData["SuccessMessage"] = "Grades updated successfully!";
             return RedirectToAction("ManageGrades", new { subjectId = grades.First().SubjectId });
         }
 
-        // Helper method: Calculate final grade
-        private double? CalculateFinalGrade(double? prelim, double? midterm, double? semiFinal, double? final)
-        {
-            var total = 0.0;
-            var count = 0;
+    
 
-            if (prelim.HasValue) { total += prelim.Value; count++; }
-            if (midterm.HasValue) { total += midterm.Value; count++; }
-            if (semiFinal.HasValue) { total += semiFinal.Value; count++; }
-            if (final.HasValue) { total += final.Value; count++; }
 
-            if (count == 0) return null;
-            return Math.Round(total / count, 2);
-        }
-
-    }
+}
 }
 
